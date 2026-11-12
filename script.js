@@ -1,77 +1,87 @@
 // ==========================================
-// MÓDULO 1: CONEXIÓN Y MANEJO DE ESTADO
+// 1. MENÚ LATERAL Y NAVEGACIÓN
 // ==========================================
+$(document).ready(function() {
+    $('#menuToggle').on('click', function() {
+        $('#sideMenu').addClass('open');
+        $('#menuOverlay').addClass('open');
+    });
+
+    $('#menuOverlay, .menu-item').on('click', function(e) {
+        if (e.target.classList.contains('menu-item')) {
+            e.preventDefault();
+            let target = $(this).data('target');
+            $('.menu-item').removeClass('active');
+            $(this).addClass('active');
+            $('.app-view').removeClass('active');
+            $('#' + target).addClass('active');
+        }
+        $('#sideMenu').removeClass('open');
+        $('#menuOverlay').removeClass('open');
+    });
+});
+
+// ==========================================
+// 2. ESTADO DE RED Y PWA (INSTALACIÓN)
+// ==========================================
+let deferredPrompt;
+const btnInstalar = document.getElementById('btnInstalar');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    btnInstalar.classList.remove('d-none'); // Mostrar botón
+});
+
+btnInstalar.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+        btnInstalar.classList.add('d-none');
+    }
+    deferredPrompt = null;
+});
+
 function gestionarEstadoRed() {
     if (navigator.onLine) {
-        $('#estadoRed').text('🟢 En Línea').removeClass('bg-warning text-dark').addClass('bg-success');
+        $('#estadoRed').text('🟢').removeClass('bg-warning').addClass('bg-success');
         $('#alertaRed').addClass('d-none');
-
-        // Restauramos el formulario
         $('#formReserva').find('input, button').prop('disabled', false);
-        let datosGuardados = JSON.parse(localStorage.getItem('reservaOffline'));
-        if(datosGuardados) {
-            $('#nombreReserva').val(datosGuardados.nombre);
-            $('#telefonoReserva').val(datosGuardados.telefono);
-            $('#fechaReserva').val(datosGuardados.fecha);
-            $('#horaReserva').val(datosGuardados.hora);
-            mostrarToast('Conexión Restablecida', 'Tus datos han sido restaurados.');
-            localStorage.removeItem('reservaOffline');
-        }
     } else {
-        $('#estadoRed').text('🟠 Offline').removeClass('bg-success').addClass('bg-warning text-dark');
+        $('#estadoRed').text('🟠').removeClass('bg-success').addClass('bg-warning');
         $('#alertaRed').removeClass('d-none');
-
-        // Guardamos y bloqueamos
-        if($('#nombreReserva').val() || $('#telefonoReserva').val()) {
-            let datos = {
-                nombre: $('#nombreReserva').val(),
-                telefono: $('#telefonoReserva').val(),
-                fecha: $('#fechaReserva').val(),
-                hora: $('#horaReserva').val()
-            };
-            localStorage.setItem('reservaOffline', JSON.stringify(datos));
-            mostrarToast('Sin Conexión', 'Formulario bloqueado. Datos guardados temporalmente.');
-        }
         $('#formReserva').find('input, button').prop('disabled', true);
+        mostrarToast('Sin Conexión', 'Formulario bloqueado temporalmente.');
     }
 }
 $(window).on('online offline', gestionarEstadoRed);
 $(document).ready(gestionarEstadoRed);
 
 // ==========================================
-// MÓDULO 2: FETCH CATÁLOGO
+// 3. FETCH CATÁLOGO Y MODAL (Disco + Letra)
 // ==========================================
 $(document).ready(function() {
     fetch('data/canciones.json')
-        .then(response => {
-            if (!response.ok) throw new Error('Error HTTP');
-            return response.json();
-        })
+        .then(res => { if(!res.ok) throw new Error(); return res.json(); })
         .then(canciones => {
             let html = '';
-            canciones.forEach((item, index) => {
-                let delay = index * 0.05;
-                // Aquí se aplica Lazy Loading a la miniatura
+            canciones.forEach((item, i) => {
                 html += `
-                <article class="tarjeta-pista" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-genero="${item.genero}" data-hd="${item.portada_hd}" data-letra="${item.letra}" style="animation-delay: ${delay}s">
-                    <img src="${item.portada}" alt="${item.titulo}" loading="lazy" class="img-portada" width="48" height="48">
+                <article class="tarjeta-pista" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-genero="${item.genero}" data-hd="${item.portada_hd}" data-letra="${item.letra}" style="animation-delay: ${i * 0.05}s">
+                    <img src="${item.portada}" alt="${item.titulo}" loading="lazy" class="img-portada">
                     <div class="info-pista">
                         <h4>${item.titulo}</h4>
                         <p>${item.artista} • ${item.genero}</p>
                     </div>
-                    <i class="ph ph-caret-right text-neon fs-4"></i>
+                    <i class="ph ph-caret-right text-muted"></i>
                 </article>`;
             });
             $('#catalogoKaraoke').html(html);
         })
-        .catch(err => {
-            $('#catalogoKaraoke').html('<p class="text-danger text-center w-100">Error al cargar catálogo.</p>');
-        });
+        .catch(() => $('#catalogoKaraoke').html('<p class="text-danger text-center">Error al cargar catálogo.</p>'));
 });
 
-// ==========================================
-// MÓDULO 3: MODAL CON DISCO Y LETRA
-// ==========================================
 $(document).ready(function() {
     $(document).off('click', '.tarjeta-pista').on('click', '.tarjeta-pista', function() {
         let titulo = $(this).data('titulo');
@@ -85,11 +95,8 @@ $(document).ready(function() {
         $('#pistaArtista').text(artista + ' • ' + genero);
         $('#pistaLetra').text(letra);
 
-        // Lazy Loading para la imagen HD del vinilo
-        $('#pistaImgHD').attr('src', 'https://cdn-icons-png.flaticon.com/512/6596/6596121.png').css('opacity', '0.5');
-        let img = new Image();
-        img.onload = function() { $('#pistaImgHD').attr('src', hd).css('opacity', '1'); };
-        img.src = hd;
+        // Lazy loading de imagen HD para el vinilo
+        $('#pistaImgHD').attr('src', hd);
 
         $('#btnAgregarDesdeModal').off('click').on('click', function() {
             agregarACola(id, titulo);
@@ -105,11 +112,10 @@ $(document).ready(function() {
             mostrarToast('Ya está en la cola', titulo + ' ya fue agregada.');
             return;
         }
-
         $('.empty-cola').remove();
         $('#listaCola').append(`
-            <li id="cola-${id}" class="list-group-item bg-transparent text-light cola-item d-flex justify-content-between align-items-center px-0">
-                <span class="text-truncate" style="max-width: 80%;"><i class="ph ph-music-note text-neon"></i> ${titulo}</span>
+            <li id="cola-${id}" class="list-group-item bg-transparent text-light cola-item d-flex justify-content-between align-items-center">
+                <span class="text-truncate" style="max-width: 80%;"><i class="ph ph-music-note text-info"></i> ${titulo}</span>
                 <span class="badge bg-info text-dark">#${$('#listaCola li').length + 1}</span>
             </li>
         `);
@@ -118,10 +124,14 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// MÓDULO 4: FORMULARIO, VALIDACIÓN Y PAGO
+// 4. FORMULARIO, FECHAS Y PAGO
 // ==========================================
 $(document).ready(function() {
     let timerInterval;
+
+    // Configurar fecha mínima (hoy) y hora de atención
+    let today = new Date().toISOString().split('T')[0];
+    $('#fechaReserva').attr('min', today);
 
     $('#horasReserva').on('input', function() {
         let hrs = $(this).val() || 1;
@@ -132,11 +142,7 @@ $(document).ready(function() {
 
     $('#formReserva').on('submit', function(e) {
         e.preventDefault();
-
-        if(!navigator.onLine) {
-            mostrarToast('Sin Conexión', 'No puedes reservar sin internet.');
-            return;
-        }
+        if(!navigator.onLine) { mostrarToast('Sin Conexión', 'No puedes reservar sin internet.'); return; }
 
         let nombre = $('#nombreReserva').val().trim();
         let telefono = $('#telefonoReserva').val().trim();
@@ -145,31 +151,23 @@ $(document).ready(function() {
         let canciones = $('#listaCola li').length;
         let valido = true;
 
-        if(nombre.length < 3) {
-            $('#nombreReserva').addClass('is-invalid border-danger');
-            $('#errorNombre').removeClass('d-none');
-            valido = false;
-        } else {
-            $('#nombreReserva').removeClass('is-invalid border-danger').addClass('border-secondary');
-            $('#errorNombre').addClass('d-none');
-        }
+        // Validaciones
+        if(nombre.length < 3) { $('#nombreReserva').addClass('is-invalid'); $('#errorNombre').removeClass('d-none'); valido = false; }
+        else { $('#nombreReserva').removeClass('is-invalid'); $('#errorNombre').addClass('d-none'); }
 
-        if(telefono.length < 7) {
-            $('#telefonoReserva').addClass('is-invalid border-danger');
-            $('#errorTelefono').removeClass('d-none');
-            valido = false;
-        } else {
-            $('#telefonoReserva').removeClass('is-invalid border-danger').addClass('border-secondary');
-            $('#errorTelefono').addClass('d-none');
-        }
+        if(telefono.length < 7) { $('#telefonoReserva').addClass('is-invalid'); $('#errorTelefono').removeClass('d-none'); valido = false; }
+        else { $('#telefonoReserva').removeClass('is-invalid'); $('#errorTelefono').addClass('d-none'); }
 
         if(!fecha) { $('#errorFecha').removeClass('d-none'); valido = false; } else { $('#errorFecha').addClass('d-none'); }
-        if(!hora) { $('#errorHora').removeClass('d-none'); valido = false; } else { $('#errorHora').addClass('d-none'); }
 
-        if(canciones === 0) {
-            mostrarToast('Atención', 'Debes elegir al menos 1 canción.');
-            valido = false;
+        // Validar hora entre 18:00 y 23:00
+        if(!hora || hora < "18:00" || hora > "23:00") {
+            $('#errorHora').removeClass('d-none'); valido = false;
+        } else {
+            $('#errorHora').addClass('d-none');
         }
+
+        if(canciones === 0) { mostrarToast('Atención', 'Debes elegir al menos 1 canción.'); valido = false; }
 
         if(valido) {
             $('#pagoTotal').text($('#totalPagar').text() + ' BOB');
@@ -194,7 +192,6 @@ $(document).ready(function() {
         }
     });
 
-    // Pago Simulado (Hidratación)
     $('#btnPagarFinal').off('click').on('click', function() {
         clearInterval(timerInterval);
         $('#modalPago').modal('hide');
@@ -202,12 +199,10 @@ $(document).ready(function() {
 
         $('#formReserva')[0].reset();
         $('#totalPagar').text('50');
-        $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">No has elegido pistas.</li>');
+        $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola py-2">No has elegido pistas.</li>');
     });
 
-    $('#btnCancelarPago').on('click', function() {
-        clearInterval(timerInterval);
-    });
+    $('#btnCancelarPago').on('click', function() { clearInterval(timerInterval); });
 });
 
 // ==========================================
