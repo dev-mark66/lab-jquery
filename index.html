@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Karaoke UPDS | Harry Styles</title>
+    <title>Karaoke UPDS | Reservas</title>
 
-    <!-- PWA -->
-    <meta name="theme-color" content="#1a0b2e">
+    <meta name="theme-color" content="#0f0a1c">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="img/logo.png">
-    <link rel="apple-touch-icon" href="img/logo.png">
 
-    <!-- Librerías -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -24,112 +21,91 @@
 
     <!-- Barra Superior -->
     <nav class="navbar fixed-top glass-nav">
-        <div class="container-fluid">
-            <button class="btn btn-link text-white p-0 me-2" id="menuToggle">
-                <i class="ph ph-list fs-3"></i>
-            </button>
-            <a class="navbar-brand fw-bold text-gradient mx-auto" href="#">
-                <img src="img/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-gradient" href="#">
+                <img src="img/logo.png" alt="Logo" width="32" height="32" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
                 Karaoke UPDS
             </a>
-            <div id="estadoRed" class="badge bg-success small">🟢</div>
+            <div id="estadoRed" class="badge bg-success shadow-sm">🟢 En Línea</div>
         </div>
     </nav>
 
-    <!-- Menú Lateral (Drawer) -->
-    <div id="sideMenu" class="side-menu">
-        <div class="p-4">
-            <h5 class="text-gradient mb-4">Menú</h5>
-            <a href="#" class="menu-item active" data-target="view-catalogo"><i class="ph ph-music-notes"></i> Catálogo</a>
-            <a href="#" class="menu-item" data-target="view-reserva"><i class="ph ph-calendar-check"></i> Mi Reserva</a>
-            <hr class="text-secondary">
-            <button id="btnInstalar" class="btn btn-outline-light w-100 d-none">
-                <i class="ph ph-download-simple"></i> Instalar App
-            </button>
-        </div>
-    </div>
-    <div id="menuOverlay" class="menu-overlay"></div>
-
-    <!-- Contenido Principal -->
     <main class="container main-content">
+        <div class="row g-4">
 
-        <!-- VISTA 1: CATÁLOGO -->
-        <div id="view-catalogo" class="app-view active">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="text-white m-0">Catálogo</h4>
-                <span class="text-muted small">Harry Styles</span>
+            <!-- COLUMNA CATÁLOGO -->
+            <div class="col-lg-7">
+                <h2 class="section-title mb-3">Catálogo Disponible</h2>
+                <div id="alertaRed" class="alert alert-warning d-none small" role="alert">
+                    <i class="ph ph-warning-circle"></i> Sin conexión. Catálogo en caché.
+                </div>
+                <div id="catalogoKaraoke" class="lista-canciones">
+                    <div class="text-center py-5 w-100">
+                        <div class="spinner-border text-info" role="status"></div>
+                    </div>
+                </div>
             </div>
 
-            <div id="alertaRed" class="alert alert-warning d-none py-2 small" role="alert">
-                <i class="ph ph-warning-circle"></i> Sin conexión.
-            </div>
+            <!-- COLUMNA RESERVA -->
+            <div class="col-lg-5">
+                <div class="glass-card p-4 sticky-top shadow-lg" style="top: 90px;">
 
-            <div id="catalogoKaraoke" class="lista-canciones">
-                <!-- Loader -->
-                <div class="text-center py-5 text-muted w-100">
-                    <div class="spinner-border text-info" role="status"></div>
-                    <p class="mt-2">Cargando pistas...</p>
+                    <h4 class="text-gradient mb-3"><i class="ph ph-queue"></i> Tu Cola</h4>
+                    <ul id="listaCola" class="list-group list-group-flush bg-transparent mb-4" style="max-height: 120px; overflow-y: auto;">
+                        <li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>
+                    </ul>
+
+                    <hr class="text-secondary">
+
+                    <h4 class="text-gradient mb-3"><i class="ph ph-calendar-check"></i> Reserva de Sala</h4>
+                    <form id="formReserva" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label text-light fw-bold">Nombre Completo</label>
+                            <input type="text" id="nombreReserva" class="form-control bg-dark text-white border-secondary" placeholder="Ej. Alex Pérez">
+                            <small class="text-danger d-none" id="errorNombre">Ingresa tu nombre real (mín. 3 letras).</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light fw-bold">Celular / Teléfono</label>
+                            <input type="tel" id="telefonoReserva" class="form-control bg-dark text-white border-secondary" placeholder="Ej. 70012345">
+                            <small class="text-danger d-none" id="errorTelefono">Ingresa un número válido (mín. 7).</small>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-light fw-bold">Fecha de Reserva</label>
+                                <input type="date" id="fechaReserva" class="form-control bg-dark text-white border-secondary">
+                                <small class="text-danger d-none" id="errorFecha">Fecha inválida.</small>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-light fw-bold">Hora (18 a 23)</label>
+                                <input type="time" id="horaReserva" class="form-control bg-dark text-white border-secondary" min="18:00" max="23:00">
+                                <small class="text-danger d-none" id="errorHora">Hora inválida.</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light fw-bold">Horas de Karaoke (50 BOB/hr)</label>
+                            <input type="number" id="horasReserva" class="form-control bg-dark text-white border-secondary" value="1" min="1" max="5">
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded" style="background: rgba(147, 51, 234, 0.15); border: 1px solid rgba(147, 51, 234, 0.3);">
+                            <span class="text-white fw-bold">Total:</span>
+                            <span class="fs-4 fw-bold text-gradient"><span id="totalPagar">50</span> BOB</span>
+                        </div>
+
+                        <button type="submit" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold fs-5">
+                            <i class="ph ph-credit-card"></i> Confirmar y Pagar
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <!-- VISTA 2: RESERVA -->
-        <div id="view-reserva" class="app-view">
-            <h4 class="text-white mb-3">Finalizar Reserva</h4>
-
-            <!-- Resumen de la Cola -->
-            <div class="glass-card p-3 mb-4">
-                <h6 class="text-gradient mb-2"><i class="ph ph-queue"></i> Tu Cola</h6>
-                <ul id="listaCola" class="list-group list-group-flush bg-transparent mb-0" style="max-height: 120px; overflow-y: auto;">
-                    <li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola py-2">No has elegido pistas.</li>
-                </ul>
-            </div>
-
-            <!-- Formulario -->
-            <div class="glass-card p-4">
-                <form id="formReserva" novalidate>
-                    <div class="mb-3">
-                        <label class="form-label text-light small">Nombre Completo</label>
-                        <input type="text" id="nombreReserva" class="form-control bg-dark text-light border-secondary" placeholder="Ej. Alex Pérez">
-                        <small class="text-danger d-none" id="errorNombre">Requerido (mín. 3 letras).</small>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-light small">Teléfono / Celular</label>
-                        <input type="tel" id="telefonoReserva" class="form-control bg-dark text-light border-secondary" placeholder="Ej. 70012345">
-                        <small class="text-danger d-none" id="errorTelefono">Requerido (mín. 7 números).</small>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label text-light small">Fecha</label>
-                            <input type="date" id="fechaReserva" class="form-control bg-dark text-light border-secondary">
-                            <small class="text-danger d-none" id="errorFecha">Fecha inválida.</small>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label text-light small">Hora (18:00 - 23:00)</label>
-                            <input type="time" id="horaReserva" class="form-control bg-dark text-light border-secondary" min="18:00" max="23:00">
-                            <small class="text-danger d-none" id="errorHora">Hora inválida.</small>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-light small">Horas de Karaoke (50 BOB/hr)</label>
-                        <input type="number" id="horasReserva" class="form-control bg-dark text-light border-secondary" value="1" min="1" max="5">
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded" style="background: rgba(147, 51, 234, 0.1);">
-                        <span class="text-light">Total a Pagar:</span>
-                        <span class="fs-4 fw-bold text-gradient"><span id="totalPagar">50</span> BOB</span>
-                    </div>
-
-                    <button type="submit" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold">
-                        <i class="ph ph-credit-card"></i> Ir a Pagar
-                    </button>
-                </form>
-            </div>
-        </div>
-
     </main>
 
-    <!-- MODAL DETALLE PISTA (Disco Girando + Letra) -->
+    <!-- Botón Flotante Instalar PWA -->
+    <button id="btnInstalar" class="btn btn-light d-none position-fixed shadow-lg d-flex align-items-center gap-2" style="bottom: 20px; right: 20px; z-index: 9999; border-radius: 30px; padding: 10px 20px; font-weight: bold; border: 2px solid #9333ea;">
+        <i class="ph ph-download-simple fs-5 text-purple"></i> Instalar App
+    </button>
+
+    <!-- MODAL DETALLE PISTA -->
     <div class="modal fade" id="modalPista" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content glass-modal text-center p-4">
@@ -141,52 +117,52 @@
                     <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover">
                 </div>
 
-                <h3 class="text-gradient mb-1" id="pistaTitulo">Título</h3>
-                <p class="text-muted mb-3" id="pistaArtista">Artista • Género</p>
+                <h3 class="text-white mb-1" id="pistaTitulo">Título</h3>
+                <p class="text-gradient mb-3 fw-bold" id="pistaArtista">Artista</p>
 
                 <!-- Letra -->
-                <div class="letra-container mb-3 p-3 rounded text-start" style="background: rgba(0,0,0,0.4); max-height: 150px; overflow-y: auto;">
+                <div class="letra-container mb-3 p-3 rounded text-start" style="background: rgba(0,0,0,0.5); max-height: 160px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1);">
                     <h6 class="text-info mb-2"><i class="ph ph-text-align-left"></i> Letra:</h6>
                     <p class="small text-light m-0" id="pistaLetra">Cargando letra...</p>
                 </div>
 
-                <button class="btn btn-gradient w-100" id="btnAgregarDesdeModal">
+                <button class="btn btn-gradient w-100 py-3 fs-5" id="btnAgregarDesdeModal">
                     <i class="ph ph-plus"></i> Agregar a la Cola
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE PAGO (Simulado) -->
+    <!-- MODAL DE PAGO -->
     <div class="modal fade" id="modalPago" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content glass-modal p-4">
                 <div class="text-center mb-3">
-                    <h4 class="text-gradient"><i class="ph ph-credit-card"></i> Pago Seguro</h4>
-                    <p class="text-light mb-0">Total: <span class="text-gradient fw-bold" id="pagoTotal">50 BOB</span></p>
+                    <h4 class="text-gradient"><i class="ph ph-shield-check"></i> Pago Seguro</h4>
+                    <p class="text-light mb-0">Monto a pagar: <span class="text-gradient fw-bold fs-5" id="pagoTotal">50 BOB</span></p>
                 </div>
 
-                <div class="mb-2">
-                    <label class="form-label text-light small">Número de Tarjeta</label>
-                    <input type="text" class="form-control bg-dark text-light border-secondary" placeholder="0000 0000 0000 0000" maxlength="19">
+                <div class="mb-3">
+                    <label class="form-label text-light fw-bold">Número de Tarjeta</label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="0000 0000 0000 0000" maxlength="19">
                 </div>
                 <div class="row g-2 mb-3">
                     <div class="col-6">
-                        <label class="form-label text-light small">Expiración</label>
-                        <input type="text" class="form-control bg-dark text-light border-secondary" placeholder="MM/YY" maxlength="5">
+                        <label class="form-label text-light fw-bold">Expiración</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="MM/YY" maxlength="5">
                     </div>
                     <div class="col-6">
-                        <label class="form-label text-light small">CVV</label>
-                        <input type="password" class="form-control bg-dark text-light border-secondary" placeholder="123" maxlength="3">
+                        <label class="form-label text-light fw-bold">CVV</label>
+                        <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="123" maxlength="3">
                     </div>
                 </div>
 
-                <div class="timer-circle mx-auto mb-3">
+                <div class="timer-circle mx-auto mb-3 border-pink">
                     <span id="timerPago" class="fs-4 fw-bold text-white">00:30</span>
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-secondary w-50" data-bs-dismiss="modal" id="btnCancelarPago">Cancelar</button>
+                    <button type="button" class="btn btn-outline-light w-50 fw-bold" data-bs-dismiss="modal" id="btnCancelarPago">Cancelar</button>
                     <button type="button" class="btn btn-gradient w-50 fw-bold" id="btnPagarFinal">Pagar</button>
                 </div>
             </div>
