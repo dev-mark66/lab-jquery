@@ -95,7 +95,7 @@ $(document).ready(function() {
         $('#pistaArtista').text(artista + ' • ' + genero);
         $('#pistaLetra').text(letra);
 
-        // Lazy loading de imagen HD para el vinilo
+        // Lazy loading de imagen
         $('#pistaImgHD').attr('src', hd);
 
         $('#btnAgregarDesdeModal').off('click').on('click', function() {
