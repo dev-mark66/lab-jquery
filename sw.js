@@ -1,19 +1,12 @@
-const CACHE_NAME = 'karaoke-reservas-v1';
+const CACHE_NAME = 'karaoke-upds-v1';
 const ARCHIVOS = [
-    './',
-    './index.html',
-    './styles.css',
-    './script.js',
-    './manifest.json',
-    './data/canciones.json',
-    './img/logo.png'
+    './', './index.html', './styles.css', './script.js',
+    './manifest.json', './data/canciones.json', './img/logo.png'
 ];
 
 self.addEventListener('install', (event) => {
     self.skipWaiting();
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(ARCHIVOS))
-    );
+    event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ARCHIVOS)));
 });
 
 self.addEventListener('activate', (event) => {

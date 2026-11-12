@@ -14,7 +14,7 @@ $(window).on('online offline', gestionarEstadoRed);
 $(document).ready(gestionarEstadoRed);
 
 // ==========================================
-// MÓDULO 2: FETCH CATÁLOGO (Lazy Loading Nativo)
+// MÓDULO 2: FETCH (Catálogo y Lazy Loading)
 // ==========================================
 $(document).ready(function() {
     fetch('data/canciones.json')
@@ -26,15 +26,15 @@ $(document).ready(function() {
             let html = '';
             canciones.forEach((item, index) => {
                 let delay = index * 0.05;
+                // Solo cargamos 'portada' ligera, la pesada se deja en 'data-hd'
                 html += `
-                <article class="tarjeta-pista" data-id="${item.id}" data-titulo="${item.titulo}" style="animation-delay: ${delay}s">
-                    <!-- Lazy loading nativo. La imagen pesada se cargará solo al hacer clic -->
-                    <img src="${item.portada}" data-src-hd="${item.portada}" alt="${item.titulo}" loading="lazy" class="img-portada" width="48" height="48">
+                <article class="tarjeta-pista" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-genero="${item.genero}" data-hd="${item.portada_hd}" data-letra="${item.letra}" style="animation-delay: ${delay}s">
+                    <img src="${item.portada}" alt="${item.titulo}" loading="lazy" class="img-portada" width="48" height="48">
                     <div class="info-pista">
                         <h4>${item.titulo}</h4>
                         <p>${item.artista} • ${item.genero}</p>
                     </div>
-                    <button class="btn-agregar-cola"><i class="ph ph-plus"></i> Cola</button>
+                    <i class="ph ph-caret-right text-neon fs-4"></i>
                 </article>`;
             });
             $('#catalogoKaraoke').html(html);
@@ -45,15 +45,43 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// MÓDULO 3: DELEGACIÓN DE EVENTOS Y MODAL IMAGEN
+// MÓDULO 3: HIDRATACIÓN, MODAL Y COLA
 // ==========================================
 $(document).ready(function() {
-    // 1. Agregar a la cola (Delegación)
-    $(document).off('click', '.btn-agregar-cola').on('click', '.btn-agregar-cola', function() {
-        let $tarjeta = $(this).closest('.tarjeta-pista');
-        let titulo = $tarjeta.data('titulo');
-        let id = $tarjeta.data('id');
 
+    // 1. Abrir Modal (Delegación con .off().on())
+    // Aquí se aplica la hidratación al botón de la tarjeta al hacer clic
+    $(document).off('click', '.tarjeta-pista').on('click', '.tarjeta-pista', function() {
+        let titulo = $(this).data('titulo');
+        let artista = $(this).data('artista');
+        let genero = $(this).data('genero');
+        let hd = $(this).data('hd');
+        let letra = $(this).data('letra');
+        let id = $(this).data('id');
+
+        // Llenar el modal
+        $('#pistaTitulo').text(titulo);
+        $('#pistaArtista').text(artista + ' • ' + genero);
+        $('#pistaLetra').text(letra);
+
+        // Lazy Loading Real de la imagen pesada
+        $('#pistaImgHD').attr('src', 'https://cdn-icons-png.flaticon.com/512/6596/6596121.png').css('opacity', '0.5');
+        let img = new Image();
+        img.onload = function() { $('#pistaImgHD').attr('src', hd).css('opacity', '1'); };
+        img.src = hd;
+
+        // Configurar el botón de agregar del modal
+        $('#btnAgregarDesdeModal').off('click').on('click', function() {
+            agregarACola(id, titulo);
+            $('#modalPista').modal('hide');
+        });
+
+        let modalPista = new bootstrap.Modal(document.getElementById('modalPista'));
+        modalPista.show();
+    });
+
+    // 2. Función global para agregar a la cola (Aplica Hidratación)
+    function agregarACola(id, titulo) {
         if($(`#cola-${id}`).length > 0) {
             mostrarToast('Ya está en la cola', titulo + ' ya fue agregada.');
             return;
@@ -66,22 +94,8 @@ $(document).ready(function() {
                 <span class="badge bg-info text-dark">#${$('#listaCola li').length + 1}</span>
             </li>
         `);
-
         mostrarToast('¡Pista Agregada!', titulo + ' está en tu cola.');
-        $(this).html('<i class="ph ph-check"></i> Añadido').prop('disabled', true).css('opacity', '0.5');
-    });
-
-    // 2. Abrir Modal de Imagen (Lazy Loading Real)
-    $(document).off('click', '.img-portada').on('click', '.img-portada', function() {
-        let srcHD = $(this).data('src-hd'); // Carga la imagen en alta resolución
-        let titulo = $(this).closest('.tarjeta-pista').data('titulo');
-
-        $('#modalImgTitulo').text(titulo);
-        $('#modalImgSrc').attr('src', srcHD);
-
-        let modalImagen = new bootstrap.Modal(document.getElementById('modalImagen'));
-        modalImagen.show();
-    });
+    }
 });
 
 // ==========================================
@@ -90,6 +104,7 @@ $(document).ready(function() {
 $(document).ready(function() {
     let timerInterval;
 
+    // Validaciones lógicas
     $('#horasReserva').on('input', function() {
         let hrs = $(this).val() || 1;
         if(hrs < 1) { hrs = 1; $(this).val(1); }
@@ -97,10 +112,12 @@ $(document).ready(function() {
         $('#totalPagar').text(hrs * 50);
     });
 
-    // Al enviar el formulario, validamos y abrimos el pago
     $('#formReserva').on('submit', function(e) {
         e.preventDefault();
         let nombre = $('#nombreReserva').val().trim();
+        let telefono = $('#telefonoReserva').val().trim();
+        let fecha = $('#fechaReserva').val();
+        let hora = $('#horaReserva').val();
         let canciones = $('#listaCola li').length;
         let valido = true;
 
@@ -113,69 +130,70 @@ $(document).ready(function() {
             $('#errorNombre').addClass('d-none');
         }
 
+        if(telefono.length < 7) {
+            $('#telefonoReserva').addClass('is-invalid border-danger');
+            $('#errorTelefono').removeClass('d-none');
+            valido = false;
+        } else {
+            $('#telefonoReserva').removeClass('is-invalid border-danger').addClass('border-secondary');
+            $('#errorTelefono').addClass('d-none');
+        }
+
+        if(!fecha || !hora) {
+            mostrarToast('Atención', 'Debes seleccionar fecha y hora.');
+            valido = false;
+        }
+
         if(canciones === 0) {
-            mostrarToast('Atención', 'Debes elegir al menos 1 canción para reservar.');
-            return;
+            mostrarToast('Atención', 'Debes elegir al menos 1 canción.');
+            valido = false;
         }
 
         if(valido) {
-            // Setear total en el modal de pago
-            $('#pagoTotal').text($('#totalPagar').text() + ' BOB');
+            // AQUÍ APLICAMOS LA HIDRATACIÓN: .off().on() antes de abrir el modal
+            $('#btnConfirmar').off('click').on('click', function() {
+                $('#pagoTotal').text($('#totalPagar').text() + ' BOB');
+                let modalPago = new bootstrap.Modal(document.getElementById('modalPago'));
+                modalPago.show();
 
-            // Abrir Modal de Pago
-            let modalPago = new bootstrap.Modal(document.getElementById('modalPago'));
-            modalPago.show();
+                let timeLeft = 30;
+                $('#timerPago').text('00:30').removeClass('text-danger');
+                clearInterval(timerInterval);
 
-            // Iniciar temporizador
-            let timeLeft = 30;
-            $('#timerPago').text('00:30').removeClass('text-danger');
-            clearInterval(timerInterval);
+                timerInterval = setInterval(function() {
+                    timeLeft--;
+                    let s = timeLeft;
+                    $('#timerPago').text(`00:${s < 10 ? '0' : ''}${s}`);
 
-            timerInterval = setInterval(function() {
-                timeLeft--;
-                let s = timeLeft;
-                $('#timerPago').text(`00:${s < 10 ? '0' : ''}${s}`);
+                    if(timeLeft <= 10) $('#timerPago').addClass('text-danger');
 
-                if(timeLeft <= 10) $('#timerPago').addClass('text-danger');
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        modalPago.hide();
+                        mostrarToast('Expirado', 'El tiempo de pago terminó.');
+                    }
+                }, 1000);
+            });
 
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    modalPago.hide();
-                    mostrarToast('Expirado', 'El tiempo de pago ha terminado.');
-                }
-            }, 1000);
+            // Simulamos el clic para abrir el pago (ya que el submit es el que valida)
+            $('#btnConfirmar').click();
         }
     });
 
-    // Cancelar pago
-    $('#btnCancelarPago').on('click', function() {
+    // Al pagar...
+    $('#btnPagarFinal').off('click').on('click', function() {
         clearInterval(timerInterval);
-    });
+        $('#modalPago').modal('hide');
+        mostrarToast('¡Pago Exitoso!', 'Reserva confirmada.');
 
-    // Pagar Finalmente
-    $('#btnPagarFinal').on('click', function() {
-        clearInterval(timerInterval);
-        $('#modalPago').modal('hide'); // Cierra el modal de bootstrap
-
-        mostrarToast('¡Pago Exitoso!', 'Tu reserva en el Karaoke ha sido confirmada.');
-
-        // Resetear todo
         $('#formReserva')[0].reset();
         $('#totalPagar').text('50');
-        $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>');
-        $('.btn-agregar-cola').html('<i class="ph ph-plus"></i> Cola').prop('disabled', false).css('opacity', '1');
-    });
-
-    $('#nombreReserva').on('input', function() {
-        if($(this).val().trim().length >= 3) {
-            $(this).removeClass('is-invalid border-danger').addClass('border-secondary');
-            $('#errorNombre').addClass('d-none');
-        }
+        $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">No has elegido pistas.</li>');
     });
 });
 
 // ==========================================
-// UTILIDADES Y PWA
+// UTILIDADES
 // ==========================================
 function mostrarToast(titulo, mensaje) {
     $('#toastTitulo').text(titulo);

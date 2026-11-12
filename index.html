@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Karaoke PWA | Reservas y Pagos</title>
+    <title>Karaoke UPDS | Reservas y Catálogo</title>
 
     <!-- PWA -->
     <meta name="theme-color" content="#09090b">
@@ -24,7 +24,7 @@
     <!-- Navbar -->
     <nav class="navbar fixed-top glass-nav">
         <div class="container">
-            <a class="navbar-brand fw-bold text-neon" href="#"><i class="ph ph-microphone-stage"></i> Karaoke Pro</a>
+            <a class="navbar-brand fw-bold text-neon" href="#"><i class="ph ph-microphone-stage"></i> Karaoke UPDS</a>
             <div id="estadoRed" class="badge bg-success">🟢 En Línea</div>
         </div>
     </nav>
@@ -32,54 +32,61 @@
     <div class="container main-content">
         <div class="row g-4">
 
-            <!-- COLUMNA IZQUIERDA: CATÁLOGO -->
+            <!-- CATÁLOGO -->
             <div class="col-lg-7">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="section-title m-0">Elige tus Pistas</h2>
-                </div>
-
+                <h2 class="section-title mb-3">Catálogo de Pistas</h2>
                 <div id="alertaRed" class="alert alert-warning d-none" role="alert">
                     <i class="ph ph-warning-circle"></i> Sin conexión. Mostrando catálogo en caché.
                 </div>
 
                 <section id="catalogoKaraoke" class="lista-canciones">
                     <div class="text-center py-5 text-muted w-100" style="grid-column: 1 / -1;">
-                        <i class="ph ph-spinner-gap fs-1" style="animation: spin 1s linear infinite; color: var(--primary);"></i>
+                        <i class="ph ph-spinner-gap fs-1 spin-anim" style="color: var(--primary);"></i>
                         <p class="mt-2">Cargando repertorio...</p>
                     </div>
                 </section>
             </div>
 
-            <!-- COLUMNA DERECHA: COLA Y RESERVA -->
+            <!-- RESERVA -->
             <div class="col-lg-5">
-                <div class="glass-card p-4 sticky-top animate__animated animate__fadeInRight" style="top: 100px;">
-
-                    <h4 class="text-neon mb-3"><i class="ph ph-queue"></i> Tu Cola de Karaoke</h4>
-                    <ul id="listaCola" class="list-group list-group-flush bg-transparent mb-4" style="max-height: 200px; overflow-y: auto;">
-                        <li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>
+                <div class="glass-card p-4 sticky-top" style="top: 100px;">
+                    <h4 class="text-neon mb-3"><i class="ph ph-queue"></i> Tu Cola Actual</h4>
+                    <ul id="listaCola" class="list-group list-group-flush bg-transparent mb-4" style="max-height: 150px; overflow-y: auto;">
+                        <li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">No has elegido pistas.</li>
                     </ul>
 
                     <hr class="text-secondary">
 
-                    <h4 class="text-neon mb-3"><i class="ph ph-calendar-check"></i> Datos de Reserva</h4>
+                    <h4 class="text-neon mb-3"><i class="ph ph-calendar-check"></i> Reserva de Sala</h4>
                     <form id="formReserva" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label text-light small">Nombre del Titular:</label>
-                            <input type="text" id="nombreReserva" class="form-control bg-dark text-light border-secondary" placeholder="Ej. Alex">
-                            <small class="text-danger d-none" id="errorNombre">El nombre es obligatorio (mín. 3 letras).</small>
+                        <div class="mb-2">
+                            <input type="text" id="nombreReserva" class="form-control bg-dark text-light border-secondary" placeholder="Nombre Completo">
+                            <small class="text-danger d-none" id="errorNombre">Requerido.</small>
                         </div>
-
+                        <div class="mb-2">
+                            <input type="tel" id="telefonoReserva" class="form-control bg-dark text-light border-secondary" placeholder="Teléfono / Celular">
+                            <small class="text-danger d-none" id="errorTelefono">Requerido.</small>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <input type="date" id="fechaReserva" class="form-control bg-dark text-light border-secondary">
+                            </div>
+                            <div class="col-6">
+                                <input type="time" id="horaReserva" class="form-control bg-dark text-light border-secondary">
+                            </div>
+                        </div>
                         <div class="mb-3">
-                            <label class="form-label text-light small">Horas de Sala (50 BOB/hr):</label>
+                            <label class="form-label text-light small">Horas de Karaoke (50 BOB/hr):</label>
                             <input type="number" id="horasReserva" class="form-control bg-dark text-light border-secondary" value="1" min="1" max="5">
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded" style="background: rgba(0, 242, 254, 0.1);">
-                            <span class="fs-6">Total a Pagar:</span>
+                            <span class="fs-6">Total:</span>
                             <span class="fs-4 fw-bold text-neon"><span id="totalPagar">50</span> BOB</span>
                         </div>
 
-                        <button type="submit" class="btn btn-neon w-100 py-2 fw-bold btn-anim">
+                        <!-- BOTÓN CON HIDRATACIÓN (.off().on()) -->
+                        <button type="submit" id="btnConfirmar" class="btn btn-neon w-100 py-2 fw-bold">
                             <i class="ph ph-check-circle"></i> Confirmar y Pagar
                         </button>
                     </form>
@@ -89,44 +96,54 @@
         </div>
     </div>
 
-    <!-- MODAL DE IMAGEN (Lazy Loading Real) -->
-    <div class="modal fade" id="modalImagen" tabindex="-1" aria-hidden="true">
+    <!-- MODAL DE DETALLE DE PISTA (Zoom + Disco Girando + Letra) -->
+    <div class="modal fade" id="modalPista" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content glass-modal">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title text-neon" id="modalImgTitulo">Portada</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content glass-modal text-center p-4">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+
+                <!-- Disco Girando -->
+                <div class="vinyl-container mx-auto mb-4">
+                    <div class="vinyl"></div>
+                    <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover">
                 </div>
-                <div class="modal-body text-center p-0">
-                    <!-- Imagen en alta resolución que solo se carga al hacer clic -->
-                    <img id="modalImgSrc" src="" alt="Portada" class="img-fluid rounded-bottom" style="max-height: 70vh; object-fit: contain;">
+
+                <h3 class="text-neon mb-1" id="pistaTitulo">Título</h3>
+                <p class="text-muted mb-3" id="pistaArtista">Artista • Género</p>
+
+                <!-- Letra -->
+                <div class="letra-container mb-3 p-3 rounded" style="background: rgba(0,0,0,0.5); max-height: 150px; overflow-y: auto; text-align: left;">
+                    <h6 class="text-info mb-2">Letra:</h6>
+                    <p class="small text-light m-0" id="pistaLetra">Cargando letra...</p>
                 </div>
+
+                <button class="btn btn-neon w-100" id="btnAgregarDesdeModal">
+                    <i class="ph ph-plus"></i> Agregar a la Cola
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE PAGO (Con Temporizador) -->
+    <!-- MODAL DE PAGO -->
     <div class="modal fade" id="modalPago" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content glass-modal text-center p-4">
-                <h4 class="text-neon mb-3"><i class="ph ph-credit-card"></i> Procesar Pago</h4>
-                <p class="text-light">Estás a punto de pagar:</p>
+                <h4 class="text-neon mb-3"><i class="ph ph-credit-card"></i> Pago de Reserva</h4>
+                <p class="text-light">Total a pagar:</p>
                 <h2 class="text-neon mb-4" id="pagoTotal">50 BOB</h2>
-
                 <div class="timer-circle mx-auto mb-3">
                     <span id="timerPago" class="fs-4 fw-bold text-white">00:30</span>
                 </div>
-                <p class="small text-muted mb-4">Si no confirmas a tiempo, la reserva expirará.</p>
-
+                <p class="small text-muted mb-4">La reserva expirará si no se paga.</p>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-secondary w-50" data-bs-dismiss="modal" id="btnCancelarPago">Cancelar</button>
-                    <button type="button" class="btn btn-neon w-50 fw-bold" id="btnPagarFinal">Pagar Ahora</button>
+                    <button type="button" class="btn btn-neon w-50 fw-bold" id="btnPagarFinal">Pagar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notificación -->
+    <!-- Toast -->
     <div id="toast" class="toast-alert">
         <i class="ph ph-check-circle fs-3"></i>
         <div>
