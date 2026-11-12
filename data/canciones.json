@@ -1,5 +1,38 @@
 [
-  { "id": 1, "titulo": "Bohemian Rhapsody", "artista": "Queen", "genero": "Rock", "portada": "https://dl.dropboxusercontent.com/s/8v2v3z7q5h6x9k2/queen_thumb.jpg", "portada_hd": "https://dl.dropboxusercontent.com/s/8v2v3z7q5h6x9k2/queen_hd.jpg", "letra": "Is this the real life? Is this just fantasy?... (Letra completa)" },
-  { "id": 2, "titulo": "Despacito", "artista": "Luis Fonsi", "genero": "Reggaeton", "portada": "https://dl.dropboxusercontent.com/s/1a2b3c4d5e6f7g8/despacito_thumb.jpg", "portada_hd": "https://dl.dropboxusercontent.com/s/1a2b3c4d5e6f7g8/despacito_hd.jpg", "letra": "Ay, Fonsi, DY... Oh, oh, oh... (Letra completa)" },
-  { "id": 3, "titulo": "Tití Me Preguntó", "artista": "Bad Bunny", "genero": "Reggaeton", "portada": "https://dl.dropboxusercontent.com/s/9h8g7f6d5s4a3q2/badbunny_thumb.jpg", "portada_hd": "https://dl.dropboxusercontent.com/s/9h8g7f6d5s4a3q2/badbunny_hd.jpg", "letra": "Tití me preguntó si tengo muchas novias... (Letra completa)" }
+  {
+    "id": 1,
+    "titulo": "As It Was",
+    "artista": "Harry Styles",
+    "genero": "Synth-pop",
+    "portada": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "portada_hd": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "letra": "Holdin' me back... Gravity's holdin' me back... I want you to hold out the palm of your hand... Why don't we leave it at that?"
+  },
+  {
+    "id": 2,
+    "titulo": "Watermelon Sugar",
+    "artista": "Harry Styles",
+    "genero": "Pop Rock",
+    "portada": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "portada_hd": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "letra": "Tastes like strawberries on a summer evenin'... And it sounds just like a song... I want more berries and that summer feelin'..."
+  },
+  {
+    "id": 3,
+    "titulo": "Sign of the Times",
+    "artista": "Harry Styles",
+    "genero": "Soft Rock",
+    "portada": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "portada_hd": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "letra": "Just stop your crying, it's a sign of the times... Welcome to the final show... Hope you're wearing your best clothes..."
+  },
+  {
+    "id": 4,
+    "titulo": "Adore You",
+    "artista": "Harry Styles",
+    "genero": "Funk-pop",
+    "portada": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "portada_hd": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1",
+    "letra": "Walk in your rainbow paradise... Strawberry lipstick state of mind... I get so lost inside your eyes... Would you believe it?"
+  }
 ]

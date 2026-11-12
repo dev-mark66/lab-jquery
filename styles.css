@@ -14,7 +14,6 @@ body {
     margin: 0;
 }
 
-/* Navbar y Títulos */
 .glass-nav {
     background: rgba(9, 9, 11, 0.85);
     backdrop-filter: blur(12px);
@@ -26,7 +25,6 @@ body {
 .main-content { padding-top: 100px; padding-bottom: 50px; }
 .section-title { font-weight: 800; color: #fff; }
 
-/* Catálogo Grid */
 .lista-canciones {
     display: grid;
     grid-template-columns: 1fr;
@@ -55,18 +53,15 @@ body {
 .info-pista h4 { font-size: 0.95rem; margin: 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .info-pista p { font-size: 0.75rem; margin: 0; color: #a1a1aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Panel Derecho y Botones */
 .glass-card { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; }
 .btn-neon { background: var(--primary); color: #000; border: none; transition: 0.3s; border-radius: 8px; }
 .btn-neon:hover { background: #fff; box-shadow: 0 0 15px var(--primary); color: #000; }
 
-/* Lista Cola */
 #listaCola::-webkit-scrollbar { width: 5px; }
 #listaCola::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
 .cola-item { animation: slideIn 0.3s ease; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
 @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-/* MODAL GLASS */
 .glass-modal {
     background: rgba(15, 15, 20, 0.95);
     backdrop-filter: blur(25px);
@@ -75,7 +70,6 @@ body {
     box-shadow: 0 20px 50px rgba(0,0,0,0.8);
 }
 
-/* DISCO GIRANDO (Efecto Vinilo) */
 .vinyl-container {
     position: relative;
     width: 200px;
@@ -114,7 +108,6 @@ body {
 @keyframes spin { 100% { transform: rotate(360deg); } }
 .spin-anim { animation: spin 1s linear infinite; }
 
-/* Temporizador Pago */
 .timer-circle {
     width: 80px; height: 80px;
     border-radius: 50%;
@@ -123,7 +116,6 @@ body {
     box-shadow: 0 0 20px rgba(0,242,254,0.2);
 }
 
-/* Toast */
 .toast-alert {
     position: fixed; bottom: 20px; right: 20px;
     background: #10b981; color: #fff;

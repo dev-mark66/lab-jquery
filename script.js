@@ -1,20 +1,45 @@
 // ==========================================
-// MÓDULO 1: ESTADO DE RED
+// MÓDULO 1: CONEXIÓN Y MANEJO DE ESTADO
 // ==========================================
 function gestionarEstadoRed() {
     if (navigator.onLine) {
         $('#estadoRed').text('🟢 En Línea').removeClass('bg-warning text-dark').addClass('bg-success');
         $('#alertaRed').addClass('d-none');
+
+        // Restauramos el formulario
+        $('#formReserva').find('input, button').prop('disabled', false);
+        let datosGuardados = JSON.parse(localStorage.getItem('reservaOffline'));
+        if(datosGuardados) {
+            $('#nombreReserva').val(datosGuardados.nombre);
+            $('#telefonoReserva').val(datosGuardados.telefono);
+            $('#fechaReserva').val(datosGuardados.fecha);
+            $('#horaReserva').val(datosGuardados.hora);
+            mostrarToast('Conexión Restablecida', 'Tus datos han sido restaurados.');
+            localStorage.removeItem('reservaOffline');
+        }
     } else {
         $('#estadoRed').text('🟠 Offline').removeClass('bg-success').addClass('bg-warning text-dark');
         $('#alertaRed').removeClass('d-none');
+
+        // Guardamos y bloqueamos
+        if($('#nombreReserva').val() || $('#telefonoReserva').val()) {
+            let datos = {
+                nombre: $('#nombreReserva').val(),
+                telefono: $('#telefonoReserva').val(),
+                fecha: $('#fechaReserva').val(),
+                hora: $('#horaReserva').val()
+            };
+            localStorage.setItem('reservaOffline', JSON.stringify(datos));
+            mostrarToast('Sin Conexión', 'Formulario bloqueado. Datos guardados temporalmente.');
+        }
+        $('#formReserva').find('input, button').prop('disabled', true);
     }
 }
 $(window).on('online offline', gestionarEstadoRed);
 $(document).ready(gestionarEstadoRed);
 
 // ==========================================
-// MÓDULO 2: FETCH (Catálogo y Lazy Loading)
+// MÓDULO 2: FETCH CATÁLOGO
 // ==========================================
 $(document).ready(function() {
     fetch('data/canciones.json')
@@ -26,7 +51,7 @@ $(document).ready(function() {
             let html = '';
             canciones.forEach((item, index) => {
                 let delay = index * 0.05;
-                // Solo cargamos 'portada' ligera, la pesada se deja en 'data-hd'
+                // Aquí se aplica Lazy Loading a la miniatura
                 html += `
                 <article class="tarjeta-pista" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-genero="${item.genero}" data-hd="${item.portada_hd}" data-letra="${item.letra}" style="animation-delay: ${delay}s">
                     <img src="${item.portada}" alt="${item.titulo}" loading="lazy" class="img-portada" width="48" height="48">
@@ -45,12 +70,9 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// MÓDULO 3: HIDRATACIÓN, MODAL Y COLA
+// MÓDULO 3: MODAL CON DISCO Y LETRA
 // ==========================================
 $(document).ready(function() {
-
-    // 1. Abrir Modal (Delegación con .off().on())
-    // Aquí se aplica la hidratación al botón de la tarjeta al hacer clic
     $(document).off('click', '.tarjeta-pista').on('click', '.tarjeta-pista', function() {
         let titulo = $(this).data('titulo');
         let artista = $(this).data('artista');
@@ -59,18 +81,16 @@ $(document).ready(function() {
         let letra = $(this).data('letra');
         let id = $(this).data('id');
 
-        // Llenar el modal
         $('#pistaTitulo').text(titulo);
         $('#pistaArtista').text(artista + ' • ' + genero);
         $('#pistaLetra').text(letra);
 
-        // Lazy Loading Real de la imagen pesada
+        // Lazy Loading para la imagen HD del vinilo
         $('#pistaImgHD').attr('src', 'https://cdn-icons-png.flaticon.com/512/6596/6596121.png').css('opacity', '0.5');
         let img = new Image();
         img.onload = function() { $('#pistaImgHD').attr('src', hd).css('opacity', '1'); };
         img.src = hd;
 
-        // Configurar el botón de agregar del modal
         $('#btnAgregarDesdeModal').off('click').on('click', function() {
             agregarACola(id, titulo);
             $('#modalPista').modal('hide');
@@ -80,7 +100,6 @@ $(document).ready(function() {
         modalPista.show();
     });
 
-    // 2. Función global para agregar a la cola (Aplica Hidratación)
     function agregarACola(id, titulo) {
         if($(`#cola-${id}`).length > 0) {
             mostrarToast('Ya está en la cola', titulo + ' ya fue agregada.');
@@ -99,12 +118,11 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// MÓDULO 4: VALIDACIÓN, TEMPORIZADOR Y PAGO
+// MÓDULO 4: FORMULARIO, VALIDACIÓN Y PAGO
 // ==========================================
 $(document).ready(function() {
     let timerInterval;
 
-    // Validaciones lógicas
     $('#horasReserva').on('input', function() {
         let hrs = $(this).val() || 1;
         if(hrs < 1) { hrs = 1; $(this).val(1); }
@@ -114,6 +132,12 @@ $(document).ready(function() {
 
     $('#formReserva').on('submit', function(e) {
         e.preventDefault();
+
+        if(!navigator.onLine) {
+            mostrarToast('Sin Conexión', 'No puedes reservar sin internet.');
+            return;
+        }
+
         let nombre = $('#nombreReserva').val().trim();
         let telefono = $('#telefonoReserva').val().trim();
         let fecha = $('#fechaReserva').val();
@@ -139,10 +163,8 @@ $(document).ready(function() {
             $('#errorTelefono').addClass('d-none');
         }
 
-        if(!fecha || !hora) {
-            mostrarToast('Atención', 'Debes seleccionar fecha y hora.');
-            valido = false;
-        }
+        if(!fecha) { $('#errorFecha').removeClass('d-none'); valido = false; } else { $('#errorFecha').addClass('d-none'); }
+        if(!hora) { $('#errorHora').removeClass('d-none'); valido = false; } else { $('#errorHora').addClass('d-none'); }
 
         if(canciones === 0) {
             mostrarToast('Atención', 'Debes elegir al menos 1 canción.');
@@ -150,45 +172,41 @@ $(document).ready(function() {
         }
 
         if(valido) {
-            // AQUÍ APLICAMOS LA HIDRATACIÓN: .off().on() antes de abrir el modal
-            $('#btnConfirmar').off('click').on('click', function() {
-                $('#pagoTotal').text($('#totalPagar').text() + ' BOB');
-                let modalPago = new bootstrap.Modal(document.getElementById('modalPago'));
-                modalPago.show();
+            $('#pagoTotal').text($('#totalPagar').text() + ' BOB');
+            let modalPago = new bootstrap.Modal(document.getElementById('modalPago'));
+            modalPago.show();
 
-                let timeLeft = 30;
-                $('#timerPago').text('00:30').removeClass('text-danger');
-                clearInterval(timerInterval);
+            let timeLeft = 30;
+            $('#timerPago').text('00:30').removeClass('text-danger');
+            clearInterval(timerInterval);
 
-                timerInterval = setInterval(function() {
-                    timeLeft--;
-                    let s = timeLeft;
-                    $('#timerPago').text(`00:${s < 10 ? '0' : ''}${s}`);
-
-                    if(timeLeft <= 10) $('#timerPago').addClass('text-danger');
-
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        modalPago.hide();
-                        mostrarToast('Expirado', 'El tiempo de pago terminó.');
-                    }
-                }, 1000);
-            });
-
-            // Simulamos el clic para abrir el pago (ya que el submit es el que valida)
-            $('#btnConfirmar').click();
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                let s = timeLeft;
+                $('#timerPago').text(`00:${s < 10 ? '0' : ''}${s}`);
+                if(timeLeft <= 10) $('#timerPago').addClass('text-danger');
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    modalPago.hide();
+                    mostrarToast('Expirado', 'El tiempo de pago terminó.');
+                }
+            }, 1000);
         }
     });
 
-    // Al pagar...
+    // Pago Simulado (Hidratación)
     $('#btnPagarFinal').off('click').on('click', function() {
         clearInterval(timerInterval);
         $('#modalPago').modal('hide');
-        mostrarToast('¡Pago Exitoso!', 'Reserva confirmada.');
+        mostrarToast('¡Pago Exitoso!', 'Reserva confirmada. ¡A cantar!');
 
         $('#formReserva')[0].reset();
         $('#totalPagar').text('50');
         $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">No has elegido pistas.</li>');
+    });
+
+    $('#btnCancelarPago').on('click', function() {
+        clearInterval(timerInterval);
     });
 });
 

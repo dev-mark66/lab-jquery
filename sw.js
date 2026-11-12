@@ -1,4 +1,4 @@
-const CACHE_NAME = 'karaoke-upds-v1';
+const CACHE_NAME = 'karaoke-upds-v3'; // Cámbialo a v3
 const ARCHIVOS = [
     './', './index.html', './styles.css', './script.js',
     './manifest.json', './data/canciones.json', './img/logo.png'
