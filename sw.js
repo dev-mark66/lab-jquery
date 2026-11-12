@@ -1,4 +1,4 @@
-const CACHE_NAME = 'karaoke-pwa-v1';
+const CACHE_NAME = 'karaoke-reservas-v1';
 const ARCHIVOS = [
     './',
     './index.html',
