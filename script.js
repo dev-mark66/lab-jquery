@@ -14,7 +14,7 @@ $(window).on('online offline', gestionarEstadoRed);
 $(document).ready(gestionarEstadoRed);
 
 // ==========================================
-// MÓDULO 2: FETCH CATÁLOGO (Lazy Loading)
+// MÓDULO 2: FETCH CATÁLOGO (Lazy Loading Nativo)
 // ==========================================
 $(document).ready(function() {
     fetch('data/canciones.json')
@@ -28,7 +28,8 @@ $(document).ready(function() {
                 let delay = index * 0.05;
                 html += `
                 <article class="tarjeta-pista" data-id="${item.id}" data-titulo="${item.titulo}" style="animation-delay: ${delay}s">
-                    <img src="${item.portada}" alt="${item.titulo}" loading="lazy" width="48" height="48">
+                    <!-- Lazy loading nativo. La imagen pesada se cargará solo al hacer clic -->
+                    <img src="${item.portada}" data-src-hd="${item.portada}" alt="${item.titulo}" loading="lazy" class="img-portada" width="48" height="48">
                     <div class="info-pista">
                         <h4>${item.titulo}</h4>
                         <p>${item.artista} • ${item.genero}</p>
@@ -44,9 +45,10 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// MÓDULO 3: DELEGACIÓN DE EVENTOS (Cola)
+// MÓDULO 3: DELEGACIÓN DE EVENTOS Y MODAL IMAGEN
 // ==========================================
 $(document).ready(function() {
+    // 1. Agregar a la cola (Delegación)
     $(document).off('click', '.btn-agregar-cola').on('click', '.btn-agregar-cola', function() {
         let $tarjeta = $(this).closest('.tarjeta-pista');
         let titulo = $tarjeta.data('titulo');
@@ -58,7 +60,6 @@ $(document).ready(function() {
         }
 
         $('.empty-cola').remove();
-
         $('#listaCola').append(`
             <li id="cola-${id}" class="list-group-item bg-transparent text-light cola-item d-flex justify-content-between align-items-center px-0">
                 <span class="text-truncate" style="max-width: 80%;"><i class="ph ph-music-note text-neon"></i> ${titulo}</span>
@@ -69,12 +70,26 @@ $(document).ready(function() {
         mostrarToast('¡Pista Agregada!', titulo + ' está en tu cola.');
         $(this).html('<i class="ph ph-check"></i> Añadido').prop('disabled', true).css('opacity', '0.5');
     });
+
+    // 2. Abrir Modal de Imagen (Lazy Loading Real)
+    $(document).off('click', '.img-portada').on('click', '.img-portada', function() {
+        let srcHD = $(this).data('src-hd'); // Carga la imagen en alta resolución
+        let titulo = $(this).closest('.tarjeta-pista').data('titulo');
+
+        $('#modalImgTitulo').text(titulo);
+        $('#modalImgSrc').attr('src', srcHD);
+
+        let modalImagen = new bootstrap.Modal(document.getElementById('modalImagen'));
+        modalImagen.show();
+    });
 });
 
 // ==========================================
-// MÓDULO 4: VALIDACIÓN Y RESERVA
+// MÓDULO 4: VALIDACIÓN, TEMPORIZADOR Y PAGO
 // ==========================================
 $(document).ready(function() {
+    let timerInterval;
+
     $('#horasReserva').on('input', function() {
         let hrs = $(this).val() || 1;
         if(hrs < 1) { hrs = 1; $(this).val(1); }
@@ -82,6 +97,7 @@ $(document).ready(function() {
         $('#totalPagar').text(hrs * 50);
     });
 
+    // Al enviar el formulario, validamos y abrimos el pago
     $('#formReserva').on('submit', function(e) {
         e.preventDefault();
         let nombre = $('#nombreReserva').val().trim();
@@ -103,13 +119,51 @@ $(document).ready(function() {
         }
 
         if(valido) {
-            mostrarToast('¡Reserva Confirmada!', nombre + ', tu sala está lista por ' + $('#horasReserva').val() + ' horas.');
+            // Setear total en el modal de pago
+            $('#pagoTotal').text($('#totalPagar').text() + ' BOB');
 
-            $('#formReserva')[0].reset();
-            $('#totalPagar').text('50');
-            $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>');
-            $('.btn-agregar-cola').html('<i class="ph ph-plus"></i> Cola').prop('disabled', false).css('opacity', '1');
+            // Abrir Modal de Pago
+            let modalPago = new bootstrap.Modal(document.getElementById('modalPago'));
+            modalPago.show();
+
+            // Iniciar temporizador
+            let timeLeft = 30;
+            $('#timerPago').text('00:30').removeClass('text-danger');
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                let s = timeLeft;
+                $('#timerPago').text(`00:${s < 10 ? '0' : ''}${s}`);
+
+                if(timeLeft <= 10) $('#timerPago').addClass('text-danger');
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    modalPago.hide();
+                    mostrarToast('Expirado', 'El tiempo de pago ha terminado.');
+                }
+            }, 1000);
         }
+    });
+
+    // Cancelar pago
+    $('#btnCancelarPago').on('click', function() {
+        clearInterval(timerInterval);
+    });
+
+    // Pagar Finalmente
+    $('#btnPagarFinal').on('click', function() {
+        clearInterval(timerInterval);
+        $('#modalPago').modal('hide'); // Cierra el modal de bootstrap
+
+        mostrarToast('¡Pago Exitoso!', 'Tu reserva en el Karaoke ha sido confirmada.');
+
+        // Resetear todo
+        $('#formReserva')[0].reset();
+        $('#totalPagar').text('50');
+        $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>');
+        $('.btn-agregar-cola').html('<i class="ph ph-plus"></i> Cola').prop('disabled', false).css('opacity', '1');
     });
 
     $('#nombreReserva').on('input', function() {
