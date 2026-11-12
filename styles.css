@@ -4,102 +4,102 @@
     --text: #f8fafc;
 }
 
+/* Compatibilidad con Brave/Opera usando dvh */
 body {
     background-color: var(--bg);
     color: var(--text);
     font-family: 'Outfit', sans-serif;
+    min-height: 100dvh;
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
 }
 
-/* Fondo animado */
-.bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
-.blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; }
-.blob-1 { width: 400px; height: 400px; background: var(--primary); top: -10%; left: -10%; animation: float 10s infinite alternate; }
-.blob-2 { width: 300px; height: 300px; background: #fe0979; bottom: -10%; right: -10%; animation: float 10s infinite alternate-reverse; }
-@keyframes float { to { transform: translate(50px, 50px); } }
-
-/* Glassmorphism */
+/* Navbar */
 .glass-nav {
-    background: rgba(9, 9, 11, 0.7);
+    background: rgba(9, 9, 11, 0.8);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255,255,255,0.1);
     padding: 15px 0;
 }
 
-.glass-card {
+.text-neon { color: var(--primary); text-shadow: 0 0 10px rgba(0,242,254,0.5); font-weight: 800; }
+
+.main-content { padding-top: 100px; padding-bottom: 50px; }
+.section-title { font-weight: 800; color: #fff; }
+
+/* Grid del catálogo */
+.lista-canciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Tarjeta de Pista */
+.tarjeta-pista {
     background: rgba(24, 24, 27, 0.6);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255,255,255,0.05);
     border-radius: 16px;
-    transition: transform 0.3s, border-color 0.3s;
-}
-.glass-card:hover { border-color: var(--primary); transform: translateY(-2px); }
-
-.glass-modal {
-    background: rgba(24, 24, 27, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--primary);
-    border-radius: 20px;
-}
-
-/* Utilidades */
-.text-neon { color: var(--primary); text-shadow: 0 0 10px rgba(0,242,254,0.5); }
-.btn-neon {
-    background: var(--primary);
-    color: #000;
-    border: none;
-    transition: 0.3s;
-}
-.btn-neon:hover { background: #fff; box-shadow: 0 0 20px var(--primary); color: #000; }
-
-.main-content { padding-top: 100px; padding-bottom: 50px; }
-.section-title { font-weight: 800; }
-
-/* Acordeón jQuery */
-.accordion-btn {
-    color: var(--primary);
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
+    padding: 15px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 15px;
+    transition: transform 0.3s, border-color 0.3s;
 }
-.accordion-panel {
-    display: none;
-    background: rgba(0,0,0,0.3);
-    padding: 15px;
+
+.tarjeta-pista:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 242, 254, 0.1);
+}
+
+.tarjeta-pista img {
+    width: 64px;
+    height: 64px;
     border-radius: 8px;
-    font-size: 0.9rem;
-    color: #ccc;
-    margin-top: 10px;
+    object-fit: cover;
 }
 
-/* Tabs jQuery */
-.card-item { display: none; }
-.card-item.active { display: block; }
-.tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold; }
+.info-pista { flex-grow: 1; }
+.info-pista h4 { font-size: 1.1rem; margin: 0; color: #fff; }
+.info-pista p { font-size: 0.85rem; margin: 0; color: #a1a1aa; }
 
-/* Temporizador Modal */
-.timer-circle {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    border: 4px solid var(--primary);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 20px rgba(0,242,254,0.2);
+.btn-agregar-cola {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: 0.3s;
+    cursor: pointer;
 }
 
-/* Toast Alert (Reto jQuery) */
+.btn-agregar-cola:hover {
+    background: var(--primary);
+    color: #000;
+    box-shadow: 0 0 15px var(--primary);
+}
+
+/* Toast */
 .toast-alert {
     position: fixed;
-    top: 20px; right: 20px;
+    bottom: 20px;
+    right: 20px;
     background: #10b981;
     color: #fff;
     padding: 15px 25px;
     border-radius: 12px;
-    display: none; /* Oculto por defecto, jQuery lo muestra */
+    display: none;
     align-items: center;
     gap: 15px;
     z-index: 9999;
     box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

@@ -1,83 +1,76 @@
 $(document).ready(function() {
-    // 1. Acordeón (Jueves)
-    $('.accordion-btn').click(function() {
-        $(this).next('.accordion-panel').slideToggle('fast');
-        $(this).find('i').toggleClass('ph-caret-down ph-caret-up');
+
+    // 1. Consumo asíncrono con Fetch API nativo y Lazy Loading
+    fetch('data/canciones.json')
+        .then(response => {
+            // Validación manual de errores HTTP (404, 500) como pide el PDF
+            if (!response.ok) throw new Error('Error HTTP: ' + response.status);
+            return response.json();
+        })
+        .then(canciones => {
+            let html = '';
+            canciones.forEach(item => {
+                // Uso de loading="lazy" en imágenes y clases limpias
+                html += `
+                <article class="tarjeta-pista" data-id="${item.id}">
+                    <img src="${item.portada}" alt="${item.titulo}" loading="lazy" width="64" height="64">
+                    <div class="info-pista">
+                        <h4>${item.titulo}</h4>
+                        <p>${item.artista} • ${item.genero}</p>
+                    </div>
+                    <button class="btn-agregar-cola">+ Cola</button>
+                </article>`;
+            });
+            $('#catalogoKaraoke').html(html);
+        })
+        .catch(err => {
+            console.error('Fallo en catálogo:', err);
+            $('#catalogoKaraoke').html('<p class="text-danger">Error al cargar el repertorio. Revisa tu conexión.</p>');
+        });
+
+    // 2. Delegación de eventos por Event Bubbling (Ahorro de RAM)
+    // PRÁCTICA CORRECTA: .off() antes de .on() para evitar Memory Leaks
+    $('#catalogoKaraoke').off('click', '.btn-agregar-cola').on('click', '.btn-agregar-cola', function() {
+        let idPista = $(this).closest('.tarjeta-pista').data('id');
+        let titulo = $(this).closest('.tarjeta-pista').find('h4').text();
+
+        // Mostrar notificación Toast
+        $('#toast').find('strong').text('¡' + titulo + ' añadida!');
+        $('#toast').fadeIn('fast');
+        setTimeout(() => $('#toast').fadeOut('slow'), 3000);
     });
 
-    // 2. Filtro de Tabs (Jueves)
-    $('.tab-btn').click(function() {
-        $('.tab-btn').removeClass('active');
-        $(this).addClass('active');
+    // 3. Detector de Red (Opcional para la PWA)
+    function actualizarEstadoRed() {
+        if (navigator.onLine) {
+            $('#estadoRed').text('🟢 En Línea').removeClass('bg-warning text-dark').addClass('bg-success');
+        } else {
+            $('#estadoRed').text('🟠 Offline').removeClass('bg-success').addClass('bg-warning text-dark');
+        }
+    }
+    $(window).on('online offline', actualizarEstadoRed);
+    actualizarEstadoRed();
 
-        let target = $(this).data('target');
-        $('.card-item').removeClass('active').hide();
-        $('.' + target).addClass('active').fadeIn('slow');
-    });
-
-    // 3. Calculadora en Tiempo Real (Viernes)
-    $('#horas').on('input', function() {
-        let hrs = $(this).val() || 1;
-        if(hrs < 1) { hrs = 1; $(this).val(1); }
-        $('#total').text(hrs * 40);
-    });
-
-    // 4. Modal y Temporizador Asíncrono (Viernes + Reto)
-    let timerInterval;
-    const modalElement = document.getElementById('modalReserva');
-    const modal = new bootstrap.Modal(modalElement);
-
-    $('#btnReservar').click(function() {
-        // Setear total en el modal
-        $('#modalTotal').text($('#total').text() + ' BOB');
-        modal.show();
-
-        // Iniciar temporizador
-        let timeLeft = 30;
-        $('#timer').text('00:30').removeClass('text-danger');
-
-        clearInterval(timerInterval); // Prevenir múltiples intervalos
-
-        timerInterval = setInterval(function() {
-            timeLeft--;
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
-            $('#timer').text(`0${m}:${s < 10 ? '0' : ''}${s}`);
-
-            // Efecto de urgencia en los últimos 10 segundos
-            if(timeLeft <= 10) {
-                $('#timer').addClass('text-danger');
-            }
-
-            // Expiración
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                modal.hide();
-                alert('⏰ Tarifa Flash Expirada. Vuelve a intentarlo.');
-            }
+    // 4. Botón de Hidratación (Simulación SSR del otro PDF)
+    $('#hydrateBtn').on('click', function() {
+        let $btn = $(this);
+        $btn.html('<i class="ph ph-spinner-gap" style="animation: spin 1s linear infinite;"></i> Hidratando...');
+        setTimeout(() => {
+            $btn.html('<i class="ph ph-check-circle"></i> Hidratado');
+            $('#toast').find('strong').text('App Hidratada');
+            $('#toast').fadeIn('fast');
+            setTimeout(() => $('#toast').fadeOut('slow'), 2000);
         }, 1000);
     });
-
-    // 5. Cancelar Modal
-    $('#btnCancelar, #btnCerrarModal').click(function() {
-        clearInterval(timerInterval);
-        modal.hide();
-    });
-
-    // 6. Confirmar Pago y Mostrar Toast
-    $('#btnPagar').click(function() {
-        clearInterval(timerInterval);
-        modal.hide();
-
-        // Mostrar Toast con jQuery (Reto Nivel PRO)
-        $('#toastAlert').slideDown('fast');
-        setTimeout(function() {
-            $('#toastAlert').fadeOut('slow');
-        }, 3000); // Se oculta a los 3 segundos
-    });
-
-    // Limpiar intervalo si el modal se cierra por fuera
-    modalElement.addEventListener('hidden.bs.modal', function () {
-        clearInterval(timerInterval);
-    });
 });
+
+// ==========================================
+// REGISTRO DEL SERVICE WORKER (PWA)
+// ==========================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('✅ SW Karaoke registrado'))
+            .catch(err => console.log('❌ Error SW:', err));
+    });
+}
