@@ -33,9 +33,9 @@
     <main class="container main-content">
         <div class="row g-4">
 
-            <!-- COLUMNA IZQUIERDA: CATÁLOGO Y DISCO -->
+            <!-- COLUMNA IZQUIERDA: CATÁLOGO -->
             <div class="col-lg-7">
-                <h2 class="section-title mb-3">Catálogo de Pistas</h2>
+                <h2 class="section-title mb-3">Catálogo Disponible</h2>
                 <div id="alertaRed" class="alert alert-warning d-none small" role="alert">
                     <i class="ph ph-warning-circle"></i> Sin conexión. Catálogo en caché.
                 </div>
@@ -57,7 +57,7 @@
 
                     <hr class="text-secondary">
 
-                    <!-- FORMULARIO ADAPTADO AL PDF Y XSS -->
+                    <!-- FORMULARIO ADAPTADO AL PDF (ANTI-XSS) -->
                     <h4 class="text-gradient mb-3"><i class="ph ph-calendar-check"></i> Reserva de Sala</h4>
                     <form id="formReserva" novalidate>
                         <div class="mb-3">
@@ -75,13 +75,12 @@
                             </select>
                         </div>
 
-                        <!-- BOTÓN CON HIDRATACIÓN -->
                         <button type="submit" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold fs-5">
                             <i class="ph ph-check-circle"></i> Confirmar Reserva
                         </button>
                     </form>
 
-                    <!-- LISTA DE RESERVAS SEGURA (ANTI-XSS) -->
+                    <!-- LISTA DE RESERVAS SEGURA -->
                     <div class="mt-4">
                         <h5 class="text-light mb-2">Tus Reservas:</h5>
                         <ul id="listaReservas" class="lista-segura list-group list-group-flush bg-transparent"></ul>
@@ -91,27 +90,28 @@
         </div>
     </main>
 
-    <!-- MODAL DETALLE PISTA (DISCO GIRANDO) -->
+    <!-- MODAL KARAOKE (EXPERIENCIA INMERSIVA) -->
     <div class="modal fade" id="modalPista" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content glass-modal text-center p-4">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down">
+            <div class="modal-content glass-modal karaoke-bg text-center p-4">
                 <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
 
+                <!-- DISCO GIRANDO (Estructura corregida) -->
                 <div class="vinyl-container mx-auto mb-4">
-                    <div class="vinyl"></div>
-                    <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover">
+                    <div class="vinyl-disc"></div>
+                    <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover spin-animation">
                 </div>
 
-                <h3 class="text-white mb-1" id="pistaTitulo">Título</h3>
-                <p class="text-gradient mb-3 fw-bold" id="pistaArtista">Artista</p>
+                <h2 class="text-white mb-1 fw-bold" id="pistaTitulo">Título</h2>
+                <p class="text-gradient mb-4 fw-bold fs-5" id="pistaArtista">Artista</p>
 
-                <div class="letra-container mb-3 p-3 rounded text-start" style="background: rgba(0,0,0,0.5); max-height: 160px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1);">
-                    <h6 class="text-info mb-2"><i class="ph ph-text-align-left"></i> Letra:</h6>
-                    <p class="small text-light m-0" id="pistaLetra">Cargando letra...</p>
+                <!-- LETRA ESTILO KARAOKE -->
+                <div class="letra-container mb-4 p-4 rounded-4 text-center">
+                    <p class="karaoke-text m-0" id="pistaLetra">Cargando letra...</p>
                 </div>
 
-                <button class="btn btn-gradient w-100 py-3 fs-5" id="btnAgregarDesdeModal">
-                    <i class="ph ph-plus"></i> Agregar a la Cola
+                <button class="btn btn-gradient w-100 py-3 fs-5 fw-bold shadow-lg" id="btnAgregarDesdeModal">
+                    <i class="ph ph-plus-circle"></i> Agregar a la Cola
                 </button>
             </div>
         </div>

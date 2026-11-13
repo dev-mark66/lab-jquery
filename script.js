@@ -58,14 +58,18 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// 3. MODAL Y COLA (.off().on() Hidratación)
+// 3. MODAL KARAOKE Y COLA (.off().on())
 // ==========================================
 $(document).ready(function() {
     $(document).off('click', '.tarjeta-pista').on('click', '.tarjeta-pista', function() {
         let hd = $(this).data('hd');
         $('#pistaTitulo').text($(this).data('titulo'));
         $('#pistaArtista').text($(this).data('artista'));
-        $('#pistaLetra').text($(this).data('letra'));
+
+        // Formatear la letra: reemplazar saltos de línea por <br> para que se vea bien
+        let letraRaw = $(this).data('letra');
+        let letraFormateada = letraRaw.split('\n').join('<br><br>');
+        $('#pistaLetra').html(letraFormateada);
 
         $('#pistaImgHD').attr('src', hd);
 
@@ -99,7 +103,6 @@ $(document).ready(function() {
     $('#formReserva').off('submit').on('submit', function(e) {
         e.preventDefault();
 
-        // Si no hay conexión, bloqueamos
         if(!navigator.onLine) {
             mostrarToast('Error', 'No hay conexión a internet.');
             return;
@@ -109,7 +112,6 @@ $(document).ready(function() {
         let sala = $('#salaSelect').val();
         let valido = true;
 
-        // Validación 1: Nombre vacío
         if(!nombre) {
             $('#clienteNombre').addClass('is-invalid');
             $('#errorNombre').removeClass('d-none');
@@ -119,7 +121,6 @@ $(document).ready(function() {
             $('#errorNombre').addClass('d-none');
         }
 
-        // Validación 2: Cola vacía
         let canciones = $('#listaCola li:not(.empty-cola)').length;
         if(canciones === 0) {
             mostrarToast('Atención', 'Agrega al menos 1 canción a tu cola.');
@@ -130,28 +131,21 @@ $(document).ready(function() {
 
         // ==========================================
         // PREVENCIÓN XSS (Práctica Correcta del PDF)
-        // Se construyen nodos seguros usando .text() en lugar de concatenar HTML crudo
         // ==========================================
-        let $item = $('<li>').addClass('item-reserva d-flex justify-content-between align-items-center mb-2');
+        let $item = $('<li>').addClass('item-reserva d-flex justify-content-between align-items-center mb-2 pb-2');
         let $textSeguro = $('<strong>').text(nombre + ' - ').addClass('text-white');
         let $detalleSala = $('<span>').text(sala).addClass('badge bg-purple');
 
         $item.append($textSeguro, $detalleSala);
         $('#listaReservas').append($item);
-
-        // Animación de entrada para la reserva
         $item.hide().fadeIn(400);
 
-        // Mostrar éxito y limpiar
         mostrarToast('¡Reserva Exitosa!', nombre + ', tu ' + sala + ' está confirmada.');
 
         this.reset();
-
-        // Vaciar la cola visualmente
         $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>');
     });
 
-    // Quitar error al escribir
     $('#clienteNombre').on('input', function() {
         if($(this).val().trim().length > 0) {
             $(this).removeClass('is-invalid');
