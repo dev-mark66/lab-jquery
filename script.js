@@ -1,94 +1,100 @@
 // ==========================================
-// 1. INSTALACIÓN PWA Y ESTADO DE RED
+// 1. REGISTRO PWA Y ACTUALIZACIÓN
 // ==========================================
-let deferredPrompt;
-const btnInstalar = document.getElementById('btnInstalar');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    btnInstalar.classList.remove('d-none');
-});
-
-btnInstalar.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') btnInstalar.classList.add('d-none');
-    deferredPrompt = null;
-});
-
-function gestionarEstadoRed() {
-    if (navigator.onLine) {
-        $('#estadoRed').text('🟢 En Línea').removeClass('bg-warning').addClass('bg-success');
-        $('#alertaRed').addClass('d-none');
-        $('#formReserva').find('input, select, button').prop('disabled', false);
-    } else {
-        $('#estadoRed').text('🟠 Offline').removeClass('bg-success').addClass('bg-warning');
-        $('#alertaRed').removeClass('d-none');
-        $('#formReserva').find('input, select, button').prop('disabled', true);
-        mostrarToast('Sin Conexión', 'Formulario bloqueado.');
-    }
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => {
+                reg.onupdatefound = () => {
+                    const installingWorker = reg.installing;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            window.location.reload();
+                        }
+                    };
+                };
+            }).catch(err => console.log('Error SW:', err));
+    });
 }
-$(window).on('online offline', gestionarEstadoRed);
-$(document).ready(gestionarEstadoRed);
 
 // ==========================================
-// 2. FETCH CATÁLOGO (Lazy Loading)
+// 2. NAVEGACIÓN (TABS SIN SCROLL)
 // ==========================================
 $(document).ready(function() {
-    fetch('data/canciones.json')
-        .then(res => { if(!res.ok) throw new Error(); return res.json(); })
-        .then(canciones => {
-            let html = '';
-            canciones.forEach((item, i) => {
-                html += `
-                <article class="tarjeta-pista" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-hd="${item.portada_hd}" data-letra="${item.letra}" style="animation-delay: ${i * 0.05}s">
-                    <img src="${item.portada}" alt="${item.titulo}" loading="lazy" class="img-portada">
-                    <div class="info-pista">
-                        <h4>${item.titulo}</h4>
-                        <p>${item.artista}</p>
-                    </div>
-                    <i class="ph ph-caret-right text-gradient fs-4"></i>
+    $('.nav-item').on('click', function(e) {
+        e.preventDefault();
+        $('.nav-item').removeClass('active');
+        $(this).addClass('active');
+
+        let target = $(this).data('target');
+        $('.app-view').removeClass('active');
+        $('#' + target).addClass('active');
+    });
+});
+
+// ==========================================
+// 3. CARGA DE DATOS (PISTAS, SNACKS, BEBIDAS)
+// ==========================================
+let pistasSeleccionadas = 0;
+let extrasSeleccionados = 0;
+
+$(document).ready(function() {
+    fetch('data/productos.json')
+        .then(res => res.json())
+        .then(data => {
+            // Renderizar Pistas
+            let htmlPistas = '';
+            data.pistas.forEach(item => {
+                htmlPistas += `
+                <article class="tarjeta-pista" data-tipo="pista" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-hd="${item.portada_hd}" data-letra="${item.letra}">
+                    <img src="${item.portada}" loading="lazy" class="img-portada">
+                    <div class="info-pista"><h4>${item.titulo}</h4><p>${item.artista}</p></div>
+                    <i class="ph ph-caret-right text-muted"></i>
                 </article>`;
             });
-            $('#catalogoKaraoke').html(html);
+            $('#catalogoKaraoke').html(htmlPistas);
+
+            // Renderizar Snacks
+            let htmlSnacks = '';
+            data.snacks.forEach(item => {
+                htmlSnacks += `
+                <article class="tarjeta-pista">
+                    <img src="${item.portada}" loading="lazy" class="img-portada">
+                    <div class="info-pista"><h4>${item.titulo}</h4><p>${item.precio} BOB</p></div>
+                    <button class="btn-add btn-add-extra" data-nombre="${item.titulo}"><i class="ph ph-plus"></i></button>
+                </article>`;
+            });
+            $('#catalogoSnacks').html(htmlSnacks);
+
+            // Renderizar Bebidas
+            let htmlBebidas = '';
+            data.bebidas.forEach(item => {
+                htmlBebidas += `
+                <article class="tarjeta-pista">
+                    <img src="${item.portada}" loading="lazy" class="img-portada">
+                    <div class="info-pista"><h4>${item.titulo}</h4><p>${item.precio} BOB</p></div>
+                    <button class="btn-add btn-add-extra" data-nombre="${item.titulo}"><i class="ph ph-plus"></i></button>
+                </article>`;
+            });
+            $('#catalogoBebidas').html(htmlBebidas);
         })
-        .catch(() => $('#catalogoKaraoke').html('<p class="text-danger text-center w-100">Error al cargar.</p>'));
+        .catch(err => console.log('Error cargando JSON:', err));
 });
 
 // ==========================================
-// 3. MODAL KARAOKE Y COLA (.off().on())
+// 4. MODAL DE PISTAS Y LETRA
 // ==========================================
 $(document).ready(function() {
-    $(document).off('click', '.tarjeta-pista').on('click', '.tarjeta-pista', function() {
-        let hd = $(this).data('hd');
+    $(document).off('click', '.tarjeta-pista[data-tipo="pista"]').on('click', '.tarjeta-pista[data-tipo="pista"]', function() {
         $('#pistaTitulo').text($(this).data('titulo'));
         $('#pistaArtista').text($(this).data('artista'));
-
-        // Formatear la letra: reemplazar saltos de línea por <br> para que se vea bien
-        let letraRaw = $(this).data('letra');
-        let letraFormateada = letraRaw.split('\n').join('<br><br>');
-        $('#pistaLetra').html(letraFormateada);
-
-        $('#pistaImgHD').attr('src', hd);
-
-        let id = $(this).data('id');
-        let titulo = $(this).data('titulo');
+        $('#pistaLetra').html($(this).data('letra').split('\n').join('<br><br>'));
+        $('#pistaImgHD').attr('src', $(this).data('hd'));
 
         $('#btnAgregarDesdeModal').off('click').on('click', function() {
-            if($(`#cola-${id}`).length > 0) {
-                mostrarToast('Atención', 'Esta pista ya está en tu cola.');
-            } else {
-                $('.empty-cola').remove();
-                $('#listaCola').append(`
-                    <li id="cola-${id}" class="list-group-item bg-transparent cola-item d-flex justify-content-between align-items-center">
-                        <span class="text-truncate fw-bold" style="max-width: 80%;"><i class="ph ph-music-note text-gradient"></i> ${titulo}</span>
-                        <span class="badge bg-secondary">#${$('#listaCola li').length + 1}</span>
-                    </li>
-                `);
-                mostrarToast('¡Agregada!', titulo + ' está en tu cola.');
-            }
+            pistasSeleccionadas++;
+            $('#countPistas').text(pistasSeleccionadas);
+            mostrarToast('¡Agregada!', 'Pista sumada a tu reserva.');
             $('#modalPista').modal('hide');
         });
 
@@ -97,21 +103,33 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// 4. FORMULARIO ANTI-XSS Y VALIDACIONES (PDF)
+// 5. AGREGAR EXTRAS (SNACKS Y BEBIDAS)
+// ==========================================
+$(document).ready(function() {
+    $(document).off('click', '.btn-add-extra').on('click', '.btn-add-extra', function(e) {
+        e.stopPropagation();
+        extrasSeleccionados++;
+        $('#countExtras').text(extrasSeleccionados);
+        mostrarToast('¡Agregado!', $(this).data('nombre') + ' sumado a tu reserva.');
+
+        // Efecto visual
+        let $btn = $(this);
+        $btn.html('<i class="ph ph-check"></i>').removeClass('btn-add-extra').addClass('bg-success text-white').css('border-color', '#10b981');
+    });
+});
+
+// ==========================================
+// 6. FORMULARIO Y PREVENCIÓN XSS (PDF)
 // ==========================================
 $(document).ready(function() {
     $('#formReserva').off('submit').on('submit', function(e) {
         e.preventDefault();
 
-        if(!navigator.onLine) {
-            mostrarToast('Error', 'No hay conexión a internet.');
-            return;
-        }
-
         let nombre = $('#clienteNombre').val().trim();
         let sala = $('#salaSelect').val();
         let valido = true;
 
+        // Validar Nombre
         if(!nombre) {
             $('#clienteNombre').addClass('is-invalid');
             $('#errorNombre').removeClass('d-none');
@@ -121,29 +139,26 @@ $(document).ready(function() {
             $('#errorNombre').addClass('d-none');
         }
 
-        let canciones = $('#listaCola li:not(.empty-cola)').length;
-        if(canciones === 0) {
-            mostrarToast('Atención', 'Agrega al menos 1 canción a tu cola.');
+        // Validar que haya al menos una pista
+        if(pistasSeleccionadas === 0) {
+            mostrarToast('Atención', 'Debes elegir al menos 1 pista en el menú inferior.');
             valido = false;
+            // Mandar al usuario a la pestaña de pistas si se equivocó
+            $('.nav-item[data-target="view-pistas"]').click();
         }
 
         if(!valido) return;
 
-        // ==========================================
-        // PREVENCIÓN XSS
-        // ==========================================
-        let $item = $('<li>').addClass('item-reserva d-flex justify-content-between align-items-center mb-2 pb-2');
-        let $textSeguro = $('<strong>').text(nombre + ' - ').addClass('text-white');
-        let $detalleSala = $('<span>').text(sala).addClass('badge bg-purple');
+        // PREVENCIÓN XSS (Se usa .text() en lugar de HTML)
+        mostrarToast('¡Reserva Exitosa!', 'Tu ' + sala + ' está confirmada.');
 
-        $item.append($textSeguro, $detalleSala);
-        $('#listaReservas').append($item);
-        $item.hide().fadeIn(400);
-
-        mostrarToast('¡Reserva Exitosa!', nombre + ', tu ' + sala + ' está confirmada.');
-
+        // Resetear app
         this.reset();
-        $('#listaCola').html('<li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>');
+        pistasSeleccionadas = 0;
+        extrasSeleccionados = 0;
+        $('#countPistas').text('0');
+        $('#countExtras').text('0');
+        $('.nav-item[data-target="view-reserva"]').click();
     });
 
     $('#clienteNombre').on('input', function() {
@@ -161,9 +176,5 @@ function mostrarToast(titulo, mensaje) {
     $('#toastTitulo').text(titulo);
     $('#toastMensaje').text(mensaje);
     $('#toast').fadeIn('fast');
-    setTimeout(() => $('#toast').fadeOut('slow'), 3500);
-}
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    setTimeout(() => $('#toast').fadeOut('slow'), 3000);
 }

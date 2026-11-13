@@ -21,110 +21,136 @@
 
     <!-- Barra Superior -->
     <nav class="navbar fixed-top glass-nav">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand fw-bold text-gradient" href="#">
-                <img src="img/logo.png" alt="Logo" width="32" height="32" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
+                <img src="img/logo.png" alt="Logo" width="28" height="28" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
                 Karaoke UPDS
             </a>
             <div id="estadoRed" class="badge bg-success shadow-sm">🟢 En Línea</div>
         </div>
     </nav>
 
-    <main class="container main-content">
-        <div class="row g-4">
+    <!-- Contenedor Principal (Sin Scroll Global) -->
+    <main class="app-container">
 
-            <!-- COLUMNA IZQUIERDA: CATÁLOGO -->
-            <div class="col-lg-7">
-                <h2 class="section-title mb-3">Catálogo Disponible</h2>
-                <div id="alertaRed" class="alert alert-warning d-none small" role="alert">
-                    <i class="ph ph-warning-circle"></i> Sin conexión. Catálogo en caché.
-                </div>
-                <div id="catalogoKaraoke" class="lista-canciones">
-                    <div class="text-center py-5 w-100">
-                        <div class="spinner-border text-info" role="status"></div>
+        <!-- VISTA 1: RESERVA -->
+        <section id="view-reserva" class="app-view active">
+            <div class="glass-card p-3 h-100 d-flex flex-column">
+                <h5 class="text-gradient mb-2"><i class="ph ph-calendar-check"></i> Datos de Reserva</h5>
+
+                <form id="formReserva" class="flex-grow-1 overflow-auto pe-1" novalidate>
+                    <div class="mb-2">
+                        <label class="form-label text-light small mb-0">Nombre o Grupo:</label>
+                        <input type="text" id="clienteNombre" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej. Alex y los Románticos" required>
+                        <small class="text-danger d-none" id="errorNombre">Requerido.</small>
                     </div>
+
+                    <div class="mb-2">
+                        <label class="form-label text-light small mb-0">Sala / Turno:</label>
+                        <select id="salaSelect" class="form-select form-select-sm bg-dark text-white border-secondary">
+                            <option value="Sala VIP 1">Sala VIP 1 (Privada)</option>
+                            <option value="Mesa Central 4">Mesa Central 4 (Pública)</option>
+                            <option value="Sala Familiar">Sala Familiar (Privada)</option>
+                        </select>
+                    </div>
+
+                    <hr class="text-secondary my-2">
+
+                    <h6 class="text-gradient mb-2"><i class="ph ph-list-checks"></i> Resumen del Pedido</h6>
+                    <div class="p-2 rounded bg-black bg-opacity-50 mb-2">
+                        <div class="d-flex justify-content-between text-light small mb-1">
+                            <span>Pistas seleccionadas:</span>
+                            <span id="countPistas" class="text-warning fw-bold">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-light small mb-1">
+                            <span>Snacks / Bebidas:</span>
+                            <span id="countExtras" class="text-info fw-bold">0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-gradient w-100 py-2 fw-bold mt-auto" id="btnConfirmar">
+                        <i class="ph ph-shield-check"></i> Confirmar Reserva Segura
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VISTA 2: CATÁLOGO DE PISTAS -->
+        <section id="view-pistas" class="app-view">
+            <div class="d-flex flex-column h-100">
+                <h5 class="text-white mb-2"><i class="ph ph-music-notes"></i> Catálogo de Pistas</h5>
+                <div id="catalogoKaraoke" class="lista-canciones flex-grow-1">
+                    <!-- Loader -->
                 </div>
             </div>
+        </section>
 
-            <!-- COLUMNA DERECHA: RESERVA Y COLA -->
-            <div class="col-lg-5">
-                <div class="glass-card p-4 sticky-top shadow-lg" style="top: 90px;">
-
-                    <h4 class="text-gradient mb-3"><i class="ph ph-queue"></i> Tu Cola Actual</h4>
-                    <ul id="listaCola" class="list-group list-group-flush bg-transparent mb-4" style="max-height: 120px; overflow-y: auto;">
-                        <li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>
-                    </ul>
-
-                    <hr class="text-secondary">
-
-                    <!-- FORMULARIO ADAPTADO AL PDF (ANTI-XSS) -->
-                    <h4 class="text-gradient mb-3"><i class="ph ph-calendar-check"></i> Reserva de Sala</h4>
-                    <form id="formReserva" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label text-light fw-bold">Nombre o Grupo:</label>
-                            <input type="text" id="clienteNombre" class="form-control bg-dark text-white border-secondary" placeholder="Ej. Alex y los Románticos" required>
-                            <small class="text-danger d-none" id="errorNombre">El nombre es obligatorio.</small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label text-light fw-bold">Selecciona Sala / Turno:</label>
-                            <select id="salaSelect" class="form-select bg-dark text-white border-secondary">
-                                <option value="Sala VIP 1 (20:00 hrs)">Sala VIP 1 (20:00 hrs)</option>
-                                <option value="Mesa Central 4 (21:30 hrs)">Mesa Central 4 (21:30 hrs)</option>
-                                <option value="Sala Familiar 2 (22:00 hrs)">Sala Familiar 2 (22:00 hrs)</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold fs-5">
-                            <i class="ph ph-check-circle"></i> Confirmar Reserva
-                        </button>
-                    </form>
-
-                    <!-- LISTA DE RESERVAS SEGURA -->
-                    <div class="mt-4">
-                        <h5 class="text-light mb-2">Tus Reservas:</h5>
-                        <ul id="listaReservas" class="lista-segura list-group list-group-flush bg-transparent"></ul>
-                    </div>
-                </div>
+        <!-- VISTA 3: SNACKS -->
+        <section id="view-snacks" class="app-view">
+            <div class="d-flex flex-column h-100">
+                <h5 class="text-white mb-2"><i class="ph ph-pizza"></i> Snacks y Comida</h5>
+                <div id="catalogoSnacks" class="lista-canciones flex-grow-1"></div>
             </div>
-        </div>
+        </section>
+
+        <!-- VISTA 4: BEBIDAS -->
+        <section id="view-bebidas" class="app-view">
+            <div class="d-flex flex-column h-100">
+                <h5 class="text-white mb-2"><i class="ph ph-wine"></i> Bebidas y Refrescos</h5>
+                <div id="catalogoBebidas" class="lista-canciones flex-grow-1"></div>
+            </div>
+        </section>
+
     </main>
 
-    <!-- MODAL KARAOKE (EXPERIENCIA INMERSIVA) -->
+    <!-- Menú de Navegación Inferior (Tabs) -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" data-target="view-reserva">
+            <i class="ph ph-calendar-check"></i>
+            <span>Reserva</span>
+        </a>
+        <a href="#" class="nav-item" data-target="view-pistas">
+            <i class="ph ph-music-notes"></i>
+            <span>Pistas</span>
+        </a>
+        <a href="#" class="nav-item" data-target="view-snacks">
+            <i class="ph ph-pizza"></i>
+            <span>Snacks</span>
+        </a>
+        <a href="#" class="nav-item" data-target="view-bebidas">
+            <i class="ph ph-wine"></i>
+            <span>Bebidas</span>
+        </a>
+    </nav>
+
+    <!-- MODAL KARAOKE (Letra y Disco) -->
     <div class="modal fade" id="modalPista" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down">
-            <div class="modal-content glass-modal karaoke-bg text-center p-4">
+            <div class="modal-content glass-modal karaoke-bg text-center p-3">
                 <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
 
-                <!-- DISCO GIRANDO (Estructura corregida) -->
-                <div class="vinyl-container mx-auto mb-4">
+                <div class="vinyl-container mx-auto mb-2">
                     <div class="vinyl-disc"></div>
-                    <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover spin-animation">
+                    <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover">
                 </div>
 
-                <h2 class="text-white mb-1 fw-bold" id="pistaTitulo">Título</h2>
-                <p class="text-gradient mb-4 fw-bold fs-5" id="pistaArtista">Artista</p>
+                <h4 class="text-white mb-1 fw-bold" id="pistaTitulo">Título</h4>
+                <p class="text-gradient mb-2 fw-bold" id="pistaArtista">Artista</p>
 
-                <!-- LETRA ESTILO KARAOKE -->
-                <div class="letra-container mb-4 p-4 rounded-4 text-center">
-                    <p class="karaoke-text m-0" id="pistaLetra">Cargando letra...</p>
+                <div class="letra-container mb-3 p-3 rounded-4 text-center flex-grow-1">
+                    <p class="karaoke-text m-0" id="pistaLetra">Letra...</p>
                 </div>
 
-                <button class="btn btn-gradient w-100 py-3 fs-5 fw-bold shadow-lg" id="btnAgregarDesdeModal">
-                    <i class="ph ph-plus-circle"></i> Agregar a la Cola
+                <button class="btn btn-gradient w-100 py-2 fs-6 fw-bold" id="btnAgregarDesdeModal">
+                    <i class="ph ph-plus-circle"></i> Agregar Pista
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Botón Flotante Instalar PWA -->
-    <button id="btnInstalar" class="btn btn-light d-none position-fixed shadow-lg d-flex align-items-center gap-2" style="bottom: 20px; right: 20px; z-index: 9999; border-radius: 30px; padding: 10px 20px; font-weight: bold; border: 2px solid #9333ea;">
-        <i class="ph ph-download-simple fs-5 text-purple"></i> Instalar App
-    </button>
-
     <!-- Toast -->
     <div id="toast" class="toast-alert">
-        <i class="ph ph-check-circle fs-3"></i>
+        <i class="ph ph-check-circle fs-4"></i>
         <div>
             <strong class="d-block" id="toastTitulo">¡Éxito!</strong>
             <span class="small" id="toastMensaje">Acción completada.</span>

@@ -1,0 +1,17 @@
+{
+  "pistas": [
+    { "id": 1, "titulo": "As It Was", "artista": "Harry Styles", "portada": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1", "portada_hd": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1", "letra": "Holdin' me back... Gravity's holdin' me back..." },
+    { "id": 2, "titulo": "Watermelon Sugar", "artista": "Harry Styles", "portada": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1", "portada_hd": "https://www.dropbox.com/scl/fi/8xci9xpaz51ha8sb30wbg/472c015c2501fb992270625f50b32ae7.jpg?rlkey=k33ejmcr64xvtk83zv6hgtfiw&st=y9ol3wwu&raw=1", "letra": "Tastes like strawberries on a summer evenin'..." }
+  ],
+  "snacks": [
+    { "id": 101, "titulo": "Comida - Papas Fritas", "precio": 20, "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" }
+  ],
+  "bebidas": [
+    { "id": 201, "titulo": "Refresco 1", "precio": 15, "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 202, "titulo": "Refresco 2", "precio": 15, "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 203, "titulo": "Refresco 3", "precio": 15, "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 204, "titulo": "Refresco 4", "precio": 15, "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 205, "titulo": "Refresco 5", "precio": 15, "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 206, "titulo": "Mojito (Alcohol)", "precio": 30, "portada": "https://www.dropbox.com/scl/fi/kbx611ewnurtlsi0ig8hh/mojito.jpg?rlkey=51804p7lzbc7spqiqgrjxgmda&st=bz597jdm&raw=1" }
+  ]
+}
