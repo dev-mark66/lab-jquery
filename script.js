@@ -1,100 +1,119 @@
 // ==========================================
-// 1. REGISTRO PWA Y ACTUALIZACIÓN
+// 1. ACTUALIZACIÓN PWA Y RED
 // ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => {
-                reg.onupdatefound = () => {
-                    const installingWorker = reg.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            window.location.reload();
-                        }
-                    };
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            reg.onupdatefound = () => {
+                const worker = reg.installing;
+                worker.onstatechange = () => {
+                    if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                        window.location.reload();
+                    }
                 };
-            }).catch(err => console.log('Error SW:', err));
+            };
+        });
     });
 }
 
-// ==========================================
-// 2. NAVEGACIÓN (TABS SIN SCROLL)
-// ==========================================
-$(document).ready(function() {
-    $('.nav-item').on('click', function(e) {
-        e.preventDefault();
-        $('.nav-item').removeClass('active');
-        $(this).addClass('active');
+function gestionarEstadoRed() {
+    if (navigator.onLine) {
+        $('#estadoRed').text('🟢 En Línea').removeClass('bg-warning').addClass('bg-success');
+    } else {
+        $('#estadoRed').text('🟠 Offline').removeClass('bg-success').addClass('bg-warning');
+    }
+}
+$(window).on('online offline', gestionarEstadoRed);
+$(document).ready(gestionarEstadoRed);
 
-        let target = $(this).data('target');
-        $('.app-view').removeClass('active');
-        $('#' + target).addClass('active');
+// ==========================================
+// 2. VARIABLES Y CONTROL DE TABS
+// ==========================================
+let carrito = []; // { tipo, titulo, precio, cantidad }
+let precioBaseSala = 50; // Costo fijo de sala por hora o base
+
+$(document).ready(function() {
+    // Control de Pestañas
+    $('.tab-btn').on('click', function() {
+        $('.tab-btn').removeClass('active');
+        $(this).addClass('active');
+        $('.tab-content').removeClass('active');
+        $('#' + $(this).data('target')).addClass('active');
     });
 });
 
 // ==========================================
-// 3. CARGA DE DATOS (PISTAS, SNACKS, BEBIDAS)
+// 3. CARGAR DATOS (FETCH)
 // ==========================================
-let pistasSeleccionadas = 0;
-let extrasSeleccionados = 0;
-
 $(document).ready(function() {
     fetch('data/productos.json')
         .then(res => res.json())
         .then(data => {
-            // Renderizar Pistas
+            // PISTAS
             let htmlPistas = '';
             data.pistas.forEach(item => {
                 htmlPistas += `
-                <article class="tarjeta-pista" data-tipo="pista" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-hd="${item.portada_hd}" data-letra="${item.letra}">
+                <article class="tarjeta-prod pista-card" data-id="${item.id}" data-titulo="${item.titulo}" data-artista="${item.artista}" data-hd="${item.portada_hd}" data-letra="${item.letra}" data-album="${item.album}" data-anio="${item.anio}" data-genero="${item.genero}" data-duracion="${item.duracion}">
                     <img src="${item.portada}" loading="lazy" class="img-portada">
-                    <div class="info-pista"><h4>${item.titulo}</h4><p>${item.artista}</p></div>
-                    <i class="ph ph-caret-right text-muted"></i>
+                    <div class="info-prod">
+                        <h4 class="text-truncate">${item.titulo}</h4>
+                        <p class="text-truncate">${item.artista}</p>
+                    </div>
+                    <i class="ph ph-caret-right text-muted fs-4"></i>
                 </article>`;
             });
             $('#catalogoKaraoke').html(htmlPistas);
 
-            // Renderizar Snacks
+            // SNACKS
             let htmlSnacks = '';
             data.snacks.forEach(item => {
                 htmlSnacks += `
-                <article class="tarjeta-pista">
+                <article class="tarjeta-prod prod-card" data-tipo="Snack" data-titulo="${item.titulo}" data-precio="${item.precio}" data-desc="${item.desc}" data-img="${item.portada}">
                     <img src="${item.portada}" loading="lazy" class="img-portada">
-                    <div class="info-pista"><h4>${item.titulo}</h4><p>${item.precio} BOB</p></div>
-                    <button class="btn-add btn-add-extra" data-nombre="${item.titulo}"><i class="ph ph-plus"></i></button>
+                    <div class="info-prod">
+                        <h4 class="text-truncate">${item.titulo}</h4>
+                        <p class="text-truncate">${item.desc}</p>
+                    </div>
+                    <span class="precio">${item.precio} Bs</span>
                 </article>`;
             });
             $('#catalogoSnacks').html(htmlSnacks);
 
-            // Renderizar Bebidas
+            // BEBIDAS
             let htmlBebidas = '';
             data.bebidas.forEach(item => {
                 htmlBebidas += `
-                <article class="tarjeta-pista">
+                <article class="tarjeta-prod prod-card" data-tipo="Bebida" data-titulo="${item.titulo}" data-precio="${item.precio}" data-desc="${item.desc}" data-img="${item.portada}">
                     <img src="${item.portada}" loading="lazy" class="img-portada">
-                    <div class="info-pista"><h4>${item.titulo}</h4><p>${item.precio} BOB</p></div>
-                    <button class="btn-add btn-add-extra" data-nombre="${item.titulo}"><i class="ph ph-plus"></i></button>
+                    <div class="info-prod">
+                        <h4 class="text-truncate">${item.titulo}</h4>
+                        <p class="text-truncate">${item.desc}</p>
+                    </div>
+                    <span class="precio">${item.precio} Bs</span>
                 </article>`;
             });
             $('#catalogoBebidas').html(htmlBebidas);
-        })
-        .catch(err => console.log('Error cargando JSON:', err));
+        });
 });
 
 // ==========================================
-// 4. MODAL DE PISTAS Y LETRA
+// 4. MODAL DE PISTAS (INFO COMPLETA)
 // ==========================================
 $(document).ready(function() {
-    $(document).off('click', '.tarjeta-pista[data-tipo="pista"]').on('click', '.tarjeta-pista[data-tipo="pista"]', function() {
+    $(document).off('click', '.pista-card').on('click', '.pista-card', function() {
         $('#pistaTitulo').text($(this).data('titulo'));
         $('#pistaArtista').text($(this).data('artista'));
+        $('#pistaAlbum').text($(this).data('album'));
+        $('#pistaAnio').text($(this).data('anio'));
+        $('#pistaGenero').text($(this).data('genero'));
+        $('#pistaDuracion').text($(this).data('duracion'));
         $('#pistaLetra').html($(this).data('letra').split('\n').join('<br><br>'));
         $('#pistaImgHD').attr('src', $(this).data('hd'));
 
-        $('#btnAgregarDesdeModal').off('click').on('click', function() {
-            pistasSeleccionadas++;
-            $('#countPistas').text(pistasSeleccionadas);
-            mostrarToast('¡Agregada!', 'Pista sumada a tu reserva.');
+        let titulo = $(this).data('titulo');
+
+        $('#btnAgregarPista').off('click').on('click', function() {
+            agregarAlCarrito('Pista', titulo, 0); // Las pistas no tienen costo extra, van incluidas en la sala
             $('#modalPista').modal('hide');
         });
 
@@ -103,23 +122,62 @@ $(document).ready(function() {
 });
 
 // ==========================================
-// 5. AGREGAR EXTRAS (SNACKS Y BEBIDAS)
+// 5. MODAL DE SNACKS/BEBIDAS
 // ==========================================
 $(document).ready(function() {
-    $(document).off('click', '.btn-add-extra').on('click', '.btn-add-extra', function(e) {
-        e.stopPropagation();
-        extrasSeleccionados++;
-        $('#countExtras').text(extrasSeleccionados);
-        mostrarToast('¡Agregado!', $(this).data('nombre') + ' sumado a tu reserva.');
+    $(document).off('click', '.prod-card').on('click', '.prod-card', function() {
+        $('#prodTitulo').text($(this).data('titulo'));
+        $('#prodDesc').text($(this).data('desc'));
+        $('#prodPrecio').text($(this).data('precio') + ' BOB');
+        $('#prodImg').attr('src', $(this).data('img'));
 
-        // Efecto visual
-        let $btn = $(this);
-        $btn.html('<i class="ph ph-check"></i>').removeClass('btn-add-extra').addClass('bg-success text-white').css('border-color', '#10b981');
+        let tipo = $(this).data('tipo');
+        let titulo = $(this).data('titulo');
+        let precio = $(this).data('precio');
+
+        $('#btnAgregarProd').off('click').on('click', function() {
+            agregarAlCarrito(tipo, titulo, precio);
+            $('#modalProducto').modal('hide');
+        });
+
+        new bootstrap.Modal(document.getElementById('modalProducto')).show();
     });
 });
 
 // ==========================================
-// 6. FORMULARIO Y PREVENCIÓN XSS (PDF)
+// 6. LÓGICA DEL CARRITO Y RESUMEN
+// ==========================================
+function agregarAlCarrito(tipo, titulo, precio) {
+    // Buscar si ya existe
+    let item = carrito.find(i => i.titulo === titulo);
+    if(item) {
+        item.cantidad++;
+    } else {
+        carrito.push({ tipo, titulo, precio, cantidad: 1 });
+    }
+    mostrarToast('Agregado', titulo + ' sumado a la reserva.');
+    renderizarResumen();
+}
+
+function renderizarResumen() {
+    if(carrito.length === 0) {
+        $('#listaResumen').html('<li>No has agregado nada aún.</li>');
+        return;
+    }
+
+    let html = '';
+    carrito.forEach(item => {
+        let precioTexto = item.precio > 0 ? `(x${item.cantidad}) - ${item.precio * item.cantidad} Bs` : `(x${item.cantidad})`;
+        html += `<li class="d-flex justify-content-between mb-1">
+                    <span class="text-truncate" style="max-width: 70%;">${item.titulo}</span>
+                    <span class="text-info">${precioTexto}</span>
+                 </li>`;
+    });
+    $('#listaResumen').html(html);
+}
+
+// ==========================================
+// 7. GENERAR TICKET PDF (CON ANTI-XSS)
 // ==========================================
 $(document).ready(function() {
     $('#formReserva').off('submit').on('submit', function(e) {
@@ -127,45 +185,80 @@ $(document).ready(function() {
 
         let nombre = $('#clienteNombre').val().trim();
         let sala = $('#salaSelect').val();
-        let valido = true;
 
-        // Validar Nombre
         if(!nombre) {
             $('#clienteNombre').addClass('is-invalid');
             $('#errorNombre').removeClass('d-none');
-            valido = false;
+            return;
         } else {
             $('#clienteNombre').removeClass('is-invalid');
             $('#errorNombre').addClass('d-none');
         }
 
-        // Validar que haya al menos una pista
-        if(pistasSeleccionadas === 0) {
-            mostrarToast('Atención', 'Debes elegir al menos 1 pista en el menú inferior.');
-            valido = false;
-            // Mandar al usuario a la pestaña de pistas si se equivocó
-            $('.nav-item[data-target="view-pistas"]').click();
+        if(carrito.length === 0) {
+            mostrarToast('Atención', 'Debes agregar al menos 1 producto o pista.');
+            return;
         }
 
-        if(!valido) return;
+        // Calcular Total
+        let totalExtras = carrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
+        let totalFinal = precioBaseSala + totalExtras; // Sala base 50 Bs + extras
 
-        // PREVENCIÓN XSS (Se usa .text() en lugar de HTML)
-        mostrarToast('¡Reserva Exitosa!', 'Tu ' + sala + ' está confirmada.');
+        // ==========================================
+        // PREVENCIÓN XSS: Usar .text() para inyectar datos
+        // ==========================================
+        $('#ticketCliente').text(nombre);
+        $('#ticketSala').text(sala);
+        $('#ticketTotal').text(totalFinal);
 
-        // Resetear app
-        this.reset();
-        pistasSeleccionadas = 0;
-        extrasSeleccionados = 0;
-        $('#countPistas').text('0');
-        $('#countExtras').text('0');
-        $('.nav-item[data-target="view-reserva"]').click();
+        // Fecha formateada
+        let hoy = new Date();
+        $('#ticketFecha').text(hoy.toLocaleDateString() + ' ' + hoy.toLocaleTimeString());
+
+        // Detalle del Ticket (Usando nodos seguros)
+        let $ul = $('#ticketDetalle');
+        $ul.empty();
+
+        // Agregar Sala
+        let $liSala = $('<li>').addClass('d-flex justify-content-between mb-1');
+        $liSala.append($('<span>').text('Alquiler ' + sala));
+        $liSala.append($('<span>').text(precioBaseSala + ' Bs'));
+        $ul.append($liSala);
+
+        // Agregar Productos
+        carrito.forEach(item => {
+            let $li = $('<li>').addClass('d-flex justify-content-between mb-1');
+            let texto = item.tipo === 'Pista' ? '🎵 ' + item.titulo : `${item.cantidad}x ${item.titulo}`;
+            let precio = item.precio > 0 ? (item.precio * item.cantidad) + ' Bs' : 'Incluido';
+
+            $li.append($('<span>').text(texto));
+            $li.append($('<span>').text(precio));
+            $ul.append($li);
+        });
+
+        // Mostrar Modal Ticket
+        new bootstrap.Modal(document.getElementById('modalTicket')).show();
     });
 
-    $('#clienteNombre').on('input', function() {
-        if($(this).val().trim().length > 0) {
-            $(this).removeClass('is-invalid');
-            $('#errorNombre').addClass('d-none');
-        }
+    // Descargar PDF
+    $('#btnDescargarPDF').on('click', function() {
+        const element = document.getElementById('ticketVisual');
+        const opt = {
+            margin:       0.5,
+            filename:     'Ticket_Karaoke_UPDS.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    });
+
+    // Cerrar ticket y limpiar
+    $('#btnCerrarTicket').on('click', function() {
+        this.reset();
+        carrito = [];
+        renderizarResumen();
+        $('#clienteNombre').val('');
     });
 });
 
