@@ -130,7 +130,7 @@ $(document).ready(function() {
         if(!valido) return;
 
         // ==========================================
-        // PREVENCIÓN XSS (Práctica Correcta del PDF)
+        // PREVENCIÓN XSS
         // ==========================================
         let $item = $('<li>').addClass('item-reserva d-flex justify-content-between align-items-center mb-2 pb-2');
         let $textSeguro = $('<strong>').text(nombre + ' - ').addClass('text-white');
