@@ -33,9 +33,9 @@
     <main class="container main-content">
         <div class="row g-4">
 
-            <!-- COLUMNA CATÁLOGO -->
+            <!-- COLUMNA IZQUIERDA: CATÁLOGO Y DISCO -->
             <div class="col-lg-7">
-                <h2 class="section-title mb-3">Catálogo Disponible</h2>
+                <h2 class="section-title mb-3">Catálogo de Pistas</h2>
                 <div id="alertaRed" class="alert alert-warning d-none small" role="alert">
                     <i class="ph ph-warning-circle"></i> Sin conexión. Catálogo en caché.
                 </div>
@@ -46,72 +46,57 @@
                 </div>
             </div>
 
-            <!-- COLUMNA RESERVA -->
+            <!-- COLUMNA DERECHA: RESERVA Y COLA -->
             <div class="col-lg-5">
                 <div class="glass-card p-4 sticky-top shadow-lg" style="top: 90px;">
 
-                    <h4 class="text-gradient mb-3"><i class="ph ph-queue"></i> Tu Cola</h4>
+                    <h4 class="text-gradient mb-3"><i class="ph ph-queue"></i> Tu Cola Actual</h4>
                     <ul id="listaCola" class="list-group list-group-flush bg-transparent mb-4" style="max-height: 120px; overflow-y: auto;">
                         <li class="list-group-item bg-transparent text-muted text-center border-0 empty-cola">Aún no has elegido canciones.</li>
                     </ul>
 
                     <hr class="text-secondary">
 
+                    <!-- FORMULARIO ADAPTADO AL PDF Y XSS -->
                     <h4 class="text-gradient mb-3"><i class="ph ph-calendar-check"></i> Reserva de Sala</h4>
                     <form id="formReserva" novalidate>
                         <div class="mb-3">
-                            <label class="form-label text-light fw-bold">Nombre Completo</label>
-                            <input type="text" id="nombreReserva" class="form-control bg-dark text-white border-secondary" placeholder="Ej. Alex Pérez">
-                            <small class="text-danger d-none" id="errorNombre">Ingresa tu nombre real (mín. 3 letras).</small>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-light fw-bold">Celular / Teléfono</label>
-                            <input type="tel" id="telefonoReserva" class="form-control bg-dark text-white border-secondary" placeholder="Ej. 70012345">
-                            <small class="text-danger d-none" id="errorTelefono">Ingresa un número válido (mín. 7).</small>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="form-label text-light fw-bold">Fecha de Reserva</label>
-                                <input type="date" id="fechaReserva" class="form-control bg-dark text-white border-secondary">
-                                <small class="text-danger d-none" id="errorFecha">Fecha inválida.</small>
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label text-light fw-bold">Hora (18 a 23)</label>
-                                <input type="time" id="horaReserva" class="form-control bg-dark text-white border-secondary" min="18:00" max="23:00">
-                                <small class="text-danger d-none" id="errorHora">Hora inválida.</small>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-light fw-bold">Horas de Karaoke (50 BOB/hr)</label>
-                            <input type="number" id="horasReserva" class="form-control bg-dark text-white border-secondary" value="1" min="1" max="5">
+                            <label class="form-label text-light fw-bold">Nombre o Grupo:</label>
+                            <input type="text" id="clienteNombre" class="form-control bg-dark text-white border-secondary" placeholder="Ej. Alex y los Románticos" required>
+                            <small class="text-danger d-none" id="errorNombre">El nombre es obligatorio.</small>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded" style="background: rgba(147, 51, 234, 0.15); border: 1px solid rgba(147, 51, 234, 0.3);">
-                            <span class="text-white fw-bold">Total:</span>
-                            <span class="fs-4 fw-bold text-gradient"><span id="totalPagar">50</span> BOB</span>
+                        <div class="mb-3">
+                            <label class="form-label text-light fw-bold">Selecciona Sala / Turno:</label>
+                            <select id="salaSelect" class="form-select bg-dark text-white border-secondary">
+                                <option value="Sala VIP 1 (20:00 hrs)">Sala VIP 1 (20:00 hrs)</option>
+                                <option value="Mesa Central 4 (21:30 hrs)">Mesa Central 4 (21:30 hrs)</option>
+                                <option value="Sala Familiar 2 (22:00 hrs)">Sala Familiar 2 (22:00 hrs)</option>
+                            </select>
                         </div>
 
+                        <!-- BOTÓN CON HIDRATACIÓN -->
                         <button type="submit" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold fs-5">
-                            <i class="ph ph-credit-card"></i> Confirmar y Pagar
+                            <i class="ph ph-check-circle"></i> Confirmar Reserva
                         </button>
                     </form>
+
+                    <!-- LISTA DE RESERVAS SEGURA (ANTI-XSS) -->
+                    <div class="mt-4">
+                        <h5 class="text-light mb-2">Tus Reservas:</h5>
+                        <ul id="listaReservas" class="lista-segura list-group list-group-flush bg-transparent"></ul>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Botón Flotante Instalar PWA -->
-    <button id="btnInstalar" class="btn btn-light d-none position-fixed shadow-lg d-flex align-items-center gap-2" style="bottom: 20px; right: 20px; z-index: 9999; border-radius: 30px; padding: 10px 20px; font-weight: bold; border: 2px solid #9333ea;">
-        <i class="ph ph-download-simple fs-5 text-purple"></i> Instalar App
-    </button>
-
-    <!-- MODAL DETALLE PISTA -->
+    <!-- MODAL DETALLE PISTA (DISCO GIRANDO) -->
     <div class="modal fade" id="modalPista" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content glass-modal text-center p-4">
                 <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
 
-                <!-- Disco Girando -->
                 <div class="vinyl-container mx-auto mb-4">
                     <div class="vinyl"></div>
                     <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover">
@@ -120,7 +105,6 @@
                 <h3 class="text-white mb-1" id="pistaTitulo">Título</h3>
                 <p class="text-gradient mb-3 fw-bold" id="pistaArtista">Artista</p>
 
-                <!-- Letra -->
                 <div class="letra-container mb-3 p-3 rounded text-start" style="background: rgba(0,0,0,0.5); max-height: 160px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1);">
                     <h6 class="text-info mb-2"><i class="ph ph-text-align-left"></i> Letra:</h6>
                     <p class="small text-light m-0" id="pistaLetra">Cargando letra...</p>
@@ -133,41 +117,10 @@
         </div>
     </div>
 
-    <!-- MODAL DE PAGO -->
-    <div class="modal fade" id="modalPago" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content glass-modal p-4">
-                <div class="text-center mb-3">
-                    <h4 class="text-gradient"><i class="ph ph-shield-check"></i> Pago Seguro</h4>
-                    <p class="text-light mb-0">Monto a pagar: <span class="text-gradient fw-bold fs-5" id="pagoTotal">50 BOB</span></p>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label text-light fw-bold">Número de Tarjeta</label>
-                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="0000 0000 0000 0000" maxlength="19">
-                </div>
-                <div class="row g-2 mb-3">
-                    <div class="col-6">
-                        <label class="form-label text-light fw-bold">Expiración</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="MM/YY" maxlength="5">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label text-light fw-bold">CVV</label>
-                        <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="123" maxlength="3">
-                    </div>
-                </div>
-
-                <div class="timer-circle mx-auto mb-3 border-pink">
-                    <span id="timerPago" class="fs-4 fw-bold text-white">00:30</span>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-light w-50 fw-bold" data-bs-dismiss="modal" id="btnCancelarPago">Cancelar</button>
-                    <button type="button" class="btn btn-gradient w-50 fw-bold" id="btnPagarFinal">Pagar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Botón Flotante Instalar PWA -->
+    <button id="btnInstalar" class="btn btn-light d-none position-fixed shadow-lg d-flex align-items-center gap-2" style="bottom: 20px; right: 20px; z-index: 9999; border-radius: 30px; padding: 10px 20px; font-weight: bold; border: 2px solid #9333ea;">
+        <i class="ph ph-download-simple fs-5 text-purple"></i> Instalar App
+    </button>
 
     <!-- Toast -->
     <div id="toast" class="toast-alert">
