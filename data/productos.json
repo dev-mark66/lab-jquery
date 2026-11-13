@@ -1,18 +1,26 @@
 {
   "snacks": [
-    { "id": 101, "titulo": "Papas Fritas XL", "precio": 25, "desc": "Porción gigante con cheddar y tocino.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
-    { "id": 102, "titulo": "Alitas BBQ (8 pzs)", "precio": 45, "desc": "Bañadas en salsa BBQ ahumada.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
-    { "id": 103, "titulo": "Nachos Supremos", "precio": 35, "desc": "Totopos con queso, jalapeños y guacamole.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
-    { "id": 104, "titulo": "Aros de Cebolla", "precio": 20, "desc": "Crujientes con salsa de la casa.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
-    { "id": 105, "titulo": "Hamburguesa Doble", "precio": 40, "desc": "Doble carne, queso y papas.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" }
+    { "id": 101, "titulo": "Papas Fritas XL", "precio": 25, "desc": "Porción gigante con cheddar.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 102, "titulo": "Alitas BBQ", "precio": 45, "desc": "8 piezas bañadas en BBQ.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 103, "titulo": "Nachos", "precio": 35, "desc": "Con queso y jalapeños.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 104, "titulo": "Aros de Cebolla", "precio": 20, "desc": "Crujientes con salsa.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 105, "titulo": "Hamburguesa", "precio": 40, "desc": "Doble carne y queso.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 106, "titulo": "Hot Dog", "precio": 20, "desc": "Con papas al hilo.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 107, "titulo": "Salchipapas", "precio": 30, "desc": "Salchicha y papas fritas.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 108, "titulo": "Pizza Personal", "precio": 50, "desc": "Pepperoni o 4 quesos.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 109, "titulo": "Tacos (3 pzs)", "precio": 35, "desc": "Carne, pollo o mixtos.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" },
+    { "id": 110, "titulo": "Palomitas de Maiz", "precio": 15, "desc": "Para la mesa.", "portada": "https://www.dropbox.com/scl/fi/fose06yrunmoua0huqqb0/comida.jpg?rlkey=4bmf79ee8g0gr4ut2vn2bsttr&st=37qd2yrx&raw=1" }
   ],
   "bebidas": [
-    { "id": 201, "titulo": "Refresco Clásico", "precio": 15, "desc": "Vaso de 500ml con hielo y limón.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
-    { "id": 202, "titulo": "Refresco de Sabores", "precio": 15, "desc": "Elige entre fresa, piña o cola.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
-    { "id": 203, "titulo": "Mojito", "precio": 35, "desc": "Hierbabuena fresca, limón y soda.", "portada": "https://www.dropbox.com/scl/fi/kbx611ewnurtlsi0ig8hh/mojito.jpg?rlkey=51804p7lzbc7spqiqgrjxgmda&st=bz597jdm&raw=1" },
-    { "id": 204, "titulo": "Mojito de Fresa", "precio": 38, "desc": "Nuestra receta clásica con fresas naturales.", "portada": "https://www.dropbox.com/scl/fi/kbx611ewnurtlsi0ig8hh/mojito.jpg?rlkey=51804p7lzbc7spqiqgrjxgmda&st=bz597jdm&raw=1" },
-    { "id": 205, "titulo": "Limonada Frozen", "precio": 18, "desc": "Refrescante limonada con hielo frappé.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
-    { "id": 206, "titulo": "Té Helado de Durazno", "precio": 12, "desc": "Té negro frío con un toque dulce.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
-    { "id": 207, "titulo": "Agua Mineral", "precio": 10, "desc": "Botella de agua sin gas de 600ml.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" }
+    { "id": 201, "titulo": "Refresco Clásico", "precio": 15, "desc": "Vaso 500ml con hielo.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 202, "titulo": "Refresco Sabores", "precio": 15, "desc": "Fresa, piña o cola.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 203, "titulo": "Mojito", "precio": 35, "desc": "Hierbabuena y limón.", "portada": "https://www.dropbox.com/scl/fi/kbx611ewnurtlsi0ig8hh/mojito.jpg?rlkey=51804p7lzbc7spqiqgrjxgmda&st=bz597jdm&raw=1" },
+    { "id": 204, "titulo": "Mojito Fresa", "precio": 38, "desc": "Con fresas naturales.", "portada": "https://www.dropbox.com/scl/fi/kbx611ewnurtlsi0ig8hh/mojito.jpg?rlkey=51804p7lzbc7spqiqgrjxgmda&st=bz597jdm&raw=1" },
+    { "id": 205, "titulo": "Limonada", "precio": 18, "desc": "Hielo frappé.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 206, "titulo": "Té Helado", "precio": 12, "desc": "Durazno.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 207, "titulo": "Agua Mineral", "precio": 10, "desc": "Botella 600ml.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 208, "titulo": "Cerveza", "precio": 25, "desc": "Botella 330ml.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 209, "titulo": "Jugo Natural", "precio": 20, "desc": "Naranja o zanahoria.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" },
+    { "id": 210, "titulo": "Café Helado", "precio": 18, "desc": "Con leche.", "portada": "https://www.dropbox.com/scl/fi/ul8t2x3zeu8lyuzbrnpkb/images.jpg?rlkey=vqj1a1pdkwaxsgi2i03p4wuqo&st=6gjei293&raw=1" }
   ]
 }

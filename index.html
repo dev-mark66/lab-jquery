@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Karaoke UPDS | POS</title>
-
     <meta name="theme-color" content="#0f0a1c">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="img/logo.png">
@@ -23,7 +22,7 @@
     <nav class="navbar fixed-top glass-nav">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold text-gradient" href="#">
-                <img src="img/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
+                <img src="img/logo.png" alt="Logo" width="28" height="28" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
                 Karaoke UPDS
             </a>
             <div id="estadoRed" class="badge bg-success shadow-sm">🟢</div>
@@ -31,18 +30,20 @@
     </nav>
 
     <main class="app-container">
-        <!-- 1. RESERVA -->
+        <!-- RESERVA -->
         <section id="view-reserva" class="app-view active">
             <div class="glass-card p-3 h-100 d-flex flex-column">
-                <h6 class="text-gradient mb-2"><i class="ph ph-receipt"></i> Detalles de Reserva</h6>
+                <h6 class="text-gradient mb-3"><i class="ph ph-receipt"></i> Datos de Reserva</h6>
 
                 <form id="formReserva" class="flex-grow-1 overflow-auto pe-1" novalidate>
                     <div class="mb-2">
-                        <input type="text" id="clienteNombre" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Nombre del Cliente" required>
+                        <label class="form-label text-light small mb-0">Nombre:</label>
+                        <input type="text" id="clienteNombre" class="form-control bg-dark text-white border-secondary" placeholder="Ej. Alex" required>
                         <small class="text-danger d-none" id="errorNombre">Requerido.</small>
                     </div>
                     <div class="mb-2">
-                        <select id="salaSelect" class="form-select form-select-sm bg-dark text-white border-secondary">
+                        <label class="form-label text-light small mb-0">Sala:</label>
+                        <select id="salaSelect" class="form-select bg-dark text-white border-secondary">
                             <option value="Sala VIP 1">Sala VIP 1</option>
                             <option value="Sala VIP 2">Sala VIP 2</option>
                             <option value="Mesa Central 4">Mesa Central 4</option>
@@ -57,35 +58,38 @@
                     </div>
                 </form>
 
-                <button type="button" id="btnConfirmar" class="btn btn-gradient w-100 py-2 fw-bold shadow-lg mt-2">
+                <button type="button" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold shadow-lg mt-2">
                     <i class="ph ph-check-circle"></i> Confirmar y Ticket
                 </button>
             </div>
         </section>
 
-        <!-- 2. PISTAS -->
+        <!-- PISTAS -->
         <section id="view-pistas" class="app-view">
             <div class="h-100 d-flex flex-column">
+                <h6 class="text-white mb-2"><i class="ph ph-music-notes"></i> Pistas</h6>
                 <div id="catalogoKaraoke" class="lista-grid flex-grow-1"></div>
             </div>
         </section>
 
-        <!-- 3. SNACKS -->
+        <!-- SNACKS -->
         <section id="view-snacks" class="app-view">
             <div class="h-100 d-flex flex-column">
+                <h6 class="text-white mb-2"><i class="ph ph-pizza"></i> Snacks</h6>
                 <div id="catalogoSnacks" class="lista-grid flex-grow-1"></div>
             </div>
         </section>
 
-        <!-- 4. BEBIDAS -->
+        <!-- BEBIDAS -->
         <section id="view-bebidas" class="app-view">
             <div class="h-100 d-flex flex-column">
+                <h6 class="text-white mb-2"><i class="ph ph-wine"></i> Bebidas</h6>
                 <div id="catalogoBebidas" class="lista-grid flex-grow-1"></div>
             </div>
         </section>
     </main>
 
-    <!-- Menú Inferior Táctil -->
+    <!-- MENÚ INFERIOR -->
     <nav class="bottom-nav">
         <a href="#" class="nav-item active" data-target="view-reserva"><i class="ph ph-receipt"></i><span>Reserva</span></a>
         <a href="#" class="nav-item" data-target="view-pistas"><i class="ph ph-music-notes"></i><span>Pistas</span></a>
@@ -93,7 +97,7 @@
         <a href="#" class="nav-item" data-target="view-bebidas"><i class="ph ph-wine"></i><span>Bebidas</span></a>
     </nav>
 
-    <!-- MODAL KARAOKE (Disco Giratorio) -->
+    <!-- MODAL PISTA -->
     <div class="modal fade" id="modalPista" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content glass-modal karaoke-bg text-center p-3">
@@ -104,11 +108,7 @@
                 </div>
                 <h5 class="text-white mb-1 fw-bold" id="pistaTitulo">Título</h5>
                 <p class="text-gradient mb-2 fw-bold small" id="pistaArtista">Artista</p>
-                <div class="d-flex justify-content-center gap-1 mb-2 flex-wrap">
-                    <span class="badge bg-secondary small" id="pistaAlbum">Álbum</span>
-                    <span class="badge bg-secondary small" id="pistaGenero">Género</span>
-                </div>
-                <div class="letra-container mb-2 p-2 rounded-3 text-center flex-grow-1">
+                <div class="letra-container mb-2 p-2 rounded-3 text-center">
                     <p class="karaoke-text m-0 small" id="pistaLetra">Letra...</p>
                 </div>
                 <button class="btn btn-gradient w-100 py-2 btn-sm fw-bold" id="btnAgregarPista">
@@ -118,7 +118,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRODUCTOS (Snacks/Bebidas) -->
+    <!-- MODAL PRODUCTO -->
     <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content glass-modal text-center p-3">
@@ -138,8 +138,8 @@
     <div class="modal fade" id="modalTicket" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-dark p-0 border-0 rounded-4 overflow-hidden">
-                <!-- Estilos forzados en línea para el PDF -->
-                <div id="ticketVisual" style="background-color: #ffffff; color: #000000; padding: 20px; font-family: 'Courier New', Courier, monospace;">
+                <!-- PDF CORREGIDO (Estilos en línea para que html2pdf lo lea bien) -->
+                <div id="ticketVisual" style="background-color: #ffffff; color: #000000; padding: 20px; font-family: monospace;">
                     <div style="text-align: center; margin-bottom: 15px;">
                         <h4 style="margin: 0; font-weight: bold; font-size: 18px;">KARAOKE UPDS</h4>
                         <p style="margin: 5px 0; font-size: 12px;">Ticket de Reserva</p>

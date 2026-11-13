@@ -1,5 +1,5 @@
-const CACHE_NAME = 'karaoke-upds-v15';
-const ARCHIVOS = ['./', './index.html', './styles.css', './script.js', './manifest.json', './data/canciones.json', './data/extras.json', './img/logo.png'];
+const CACHE_NAME = 'karaoke-upds-v18';
+const ARCHIVOS = ['./', './index.html', './styles.css', './script.js', './manifest.json', './data/canciones.json', './data/productos.json', './img/logo.png'];
 
 self.addEventListener('install', (event) => {
     self.skipWaiting();
