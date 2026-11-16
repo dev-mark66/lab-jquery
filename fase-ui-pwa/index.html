@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Karaoke UPDS | Reservas</title>
+    <title>Karaoke UPDS | Reservas POS</title>
     <meta name="theme-color" content="#0f0a1c">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="img/logo.png">
@@ -19,128 +19,159 @@
 </head>
 <body>
 
-    <nav class="navbar fixed-top glass-nav">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-gradient" href="#">
-                <img src="img/logo.png" alt="Logo" width="28" height="28" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
-                Karaoke UPDS
-            </a>
-            <div id="estadoRed" class="badge bg-success shadow-sm">🟢</div>
+    <!-- NAVBAR (Web) -->
+    <nav class="navbar fixed-top glass-nav d-none d-md-flex justify-content-between px-4">
+        <a class="navbar-brand fw-bold text-gradient" href="#">
+            <img src="img/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
+            Karaoke UPDS POS
+        </a>
+        <div class="d-flex gap-4">
+            <a href="#" class="nav-link-web active" data-target="view-reserva"><i class="ph ph-receipt"></i> Reserva</a>
+            <a href="#" class="nav-link-web" data-target="view-pistas"><i class="ph ph-music-notes"></i> Pistas</a>
+            <a href="#" class="nav-link-web" data-target="view-snacks"><i class="ph ph-pizza"></i> Snacks</a>
+            <a href="#" class="nav-link-web" data-target="view-bebidas"><i class="ph ph-wine"></i> Bebidas</a>
         </div>
+        <div id="estadoRed" class="badge bg-success shadow-sm">🟢</div>
     </nav>
 
-    <main class="app-container">
-        <!-- RESERVA -->
-        <section id="view-reserva" class="app-view active">
-            <div class="glass-card p-3 h-100 d-flex flex-column">
-                <h6 class="text-gradient mb-3"><i class="ph ph-receipt"></i> Datos de Reserva</h6>
+    <!-- NAVBAR (PWA) -->
+    <nav class="navbar fixed-top glass-nav d-flex d-md-none justify-content-between px-3">
+        <a class="navbar-brand fw-bold text-gradient" href="#">
+            <img src="img/logo.png" alt="Logo" width="28" height="28" class="me-2 bg-white rounded-circle p-1">
+            Karaoke UPDS
+        </a>
+        <div id="estadoRed" class="badge bg-success shadow-sm">🟢</div>
+    </nav>
 
-                <form id="formReserva" class="flex-grow-1 overflow-auto pe-1" novalidate>
-                    <div class="mb-2">
-                        <label class="form-label text-light small mb-0">Nombre:</label>
-                        <input type="text" id="clienteNombre" class="form-control bg-dark text-white border-secondary" placeholder="Ej. Alex" required>
-                        <small class="text-danger d-none" id="errorNombre">Requerido.</small>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label text-light small mb-0">Sala:</label>
-                        <select id="salaSelect" class="form-select bg-dark text-white border-secondary">
-                            <option value="Sala VIP 1">Sala VIP 1</option>
-                            <option value="Sala VIP 2">Sala VIP 2</option>
-                            <option value="Mesa Central 4">Mesa Central 4</option>
-                            <option value="Sala Familiar">Sala Familiar</option>
-                        </select>
-                    </div>
-                    <div class="bg-black bg-opacity-50 p-2 rounded mb-2">
-                        <small class="text-light fw-bold d-block mb-1">Resumen:</small>
-                        <ul id="listaResumen" class="list-unstyled text-muted small mb-0">
-                            <li>No has agregado nada.</li>
-                        </ul>
-                    </div>
-                </form>
+    <main class="app-container container-fluid px-md-4">
+        <!-- RESERVA (Vista principal) -->
+        <section id="view-reserva" class="app-view active row">
+            <div class="col-md-5 col-lg-4 mb-3">
+                <div class="glass-card p-4 h-100 d-flex flex-column">
+                    <h5 class="text-gradient mb-3 fw-bold"><i class="ph ph-receipt"></i> Datos de Reserva</h5>
 
-                <button type="button" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold shadow-lg mt-2">
-                    <i class="ph ph-check-circle"></i> Confirmar y Ticket
-                </button>
+                    <form id="formReserva" class="flex-grow-1 overflow-auto pe-1" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label text-light small mb-1">Nombre del Cliente:</label>
+                            <input type="text" id="clienteNombre" class="form-control bg-dark text-white border-secondary" placeholder="Ej. Alex" required>
+                            <small class="text-danger d-none" id="errorNombre">Requerido.</small>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-light small mb-1">Seleccionar Sala:</label>
+                            <select id="salaSelect" class="form-select bg-dark text-white border-secondary">
+                                <option value="Sala VIP 1">Sala VIP 1</option>
+                                <option value="Sala VIP 2">Sala VIP 2</option>
+                                <option value="Mesa Central 4">Mesa Central 4</option>
+                                <option value="Sala Familiar">Sala Familiar</option>
+                            </select>
+                        </div>
+
+                        <div class="bg-black bg-opacity-50 p-3 rounded mb-3 border border-secondary">
+                            <h6 class="text-light fw-bold mb-2">Resumen del Pedido:</h6>
+                            <ul id="listaResumen" class="list-unstyled text-muted small mb-0">
+                                <li><i class="ph ph-shopping-cart"></i> No has agregado nada aún.</li>
+                            </ul>
+                        </div>
+                    </form>
+
+                    <button type="button" id="btnConfirmar" class="btn btn-gradient w-100 py-3 fw-bold shadow-lg mt-auto">
+                        <i class="ph ph-check-circle fs-5"></i> Confirmar Reserva
+                    </button>
+                </div>
+            </div>
+
+            <!-- En PC mostramos un panel de bienvenida o estadísticas rápidas -->
+            <div class="col-md-7 col-lg-8 d-none d-md-block mb-3">
+                <div class="glass-card p-5 h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                    <i class="ph ph-microphone-stage text-gradient" style="font-size: 5rem;"></i>
+                    <h2 class="text-white fw-bold mt-3">Bienvenido al Sistema POS</h2>
+                    <p class="text-muted">Selecciona pistas, agrega snacks y confirma la reserva de tu sala.</p>
+                </div>
             </div>
         </section>
 
-        <!-- PISTAS CON FILTROS -->
+        <!-- PISTAS -->
         <section id="view-pistas" class="app-view">
-            <div class="h-100 d-flex flex-column">
-                <!-- Filtros por Género -->
-                <div class="d-flex gap-2 mb-2 overflow-auto pb-1" id="filtrosGenero">
-                    <button class="btn btn-sm btn-outline-light rounded-pill active" data-filtro="todos">Todos</button>
-                    <button class="btn btn-sm btn-outline-light rounded-pill" data-filtro="Pop">Pop</button>
-                    <button class="btn btn-sm btn-outline-light rounded-pill" data-filtro="Rock">Rock</button>
-                    <button class="btn btn-sm btn-outline-light rounded-pill" data-filtro="Folk">Folk</button>
-                </div>
-                <div id="catalogoKaraoke" class="lista-grid flex-grow-1"></div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white fw-bold m-0"><i class="ph ph-music-notes text-gradient"></i> Catálogo Musical</h5>
+                <input type="text" id="buscadorPistas" class="form-control bg-dark text-white border-secondary w-50" placeholder="🔍 Buscar canción o artista...">
             </div>
+
+            <!-- Filtros de Pistas -->
+            <div class="d-flex gap-2 mb-3 overflow-auto pb-1" id="filtrosGenero">
+                <button class="btn btn-sm btn-outline-light rounded-pill active" data-filtro="todos">Todos</button>
+                <button class="btn btn-sm btn-outline-light rounded-pill" data-filtro="Pop">Pop</button>
+                <button class="btn btn-sm btn-outline-light rounded-pill" data-filtro="Rock">Rock</button>
+                <button class="btn btn-sm btn-outline-light rounded-pill" data-filtro="Folk">Folk</button>
+            </div>
+
+            <div id="catalogoKaraoke" class="grid-cards"></div>
         </section>
 
         <!-- SNACKS -->
         <section id="view-snacks" class="app-view">
-            <div class="h-100 d-flex flex-column">
-                <h6 class="text-white mb-2"><i class="ph ph-pizza"></i> Snacks</h6>
-                <div id="catalogoSnacks" class="lista-grid flex-grow-1"></div>
+             <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white fw-bold m-0"><i class="ph ph-pizza text-gradient"></i> Snacks</h5>
             </div>
+            <div id="catalogoSnacks" class="grid-cards"></div>
         </section>
 
         <!-- BEBIDAS -->
         <section id="view-bebidas" class="app-view">
-            <div class="h-100 d-flex flex-column">
-                <h6 class="text-white mb-2"><i class="ph ph-wine"></i> Bebidas</h6>
-                <div id="catalogoBebidas" class="lista-grid flex-grow-1"></div>
+             <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white fw-bold m-0"><i class="ph ph-wine text-gradient"></i> Bebidas</h5>
             </div>
+            <div id="catalogoBebidas" class="grid-cards"></div>
         </section>
     </main>
 
-    <!-- MENÚ INFERIOR -->
-    <nav class="bottom-nav">
+    <!-- MENÚ INFERIOR (Solo PWA) -->
+    <nav class="bottom-nav d-flex d-md-none">
         <a href="#" class="nav-item active" data-target="view-reserva"><i class="ph ph-receipt"></i><span>Reserva</span></a>
         <a href="#" class="nav-item" data-target="view-pistas"><i class="ph ph-music-notes"></i><span>Pistas</span></a>
         <a href="#" class="nav-item" data-target="view-snacks"><i class="ph ph-pizza"></i><span>Snacks</span></a>
         <a href="#" class="nav-item" data-target="view-bebidas"><i class="ph ph-wine"></i><span>Bebidas</span></a>
     </nav>
 
-    <!-- MODAL PISTA (Corregido el disco) -->
+    <!-- MODAL PISTA (Disco Giratorio) -->
     <div class="modal fade" id="modalPista" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content glass-modal karaoke-bg text-center p-4">
-                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2" data-bs-dismiss="modal"></button>
-
-                <!-- Contenedor del Disco -->
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                 <div class="vinyl-wrapper mx-auto mb-3">
                     <div class="vinyl-disc"></div>
                     <img id="pistaImgHD" src="" alt="Portada" class="vinyl-cover">
                 </div>
-
                 <h4 class="text-white mb-1 fw-bold" id="pistaTitulo">Título</h4>
                 <p class="text-gradient mb-3 fw-bold" id="pistaArtista">Artista</p>
-
                 <div class="letra-container mb-3 p-3 rounded-3 text-center" style="max-height: 120px;">
                     <p class="karaoke-text m-0 small" id="pistaLetra">Letra...</p>
                 </div>
-
                 <button class="btn btn-gradient w-100 py-2 fw-bold" id="btnAgregarPista">
-                    <i class="ph ph-plus-circle"></i> Agregar Pista
+                    <i class="ph ph-plus-circle fs-5"></i> Agregar Pista
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL PRODUCTO -->
+    <!-- MODAL PRODUCTO (Zoom para comida) -->
     <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content glass-modal text-center p-3">
-                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2" data-bs-dismiss="modal"></button>
-                <img id="prodImg" src="" class="img-fluid rounded mb-2" loading="lazy" style="max-height: 120px; object-fit: cover;">
-                <h6 class="text-white fw-bold mb-0" id="prodTitulo">Producto</h6>
-                <p class="text-warning fw-bold mb-1 small" id="prodPrecio">0 BOB</p>
-                <p class="text-muted small mb-2" id="prodDesc">Descripción</p>
-                <button class="btn btn-gradient w-100 py-2 btn-sm" id="btnAgregarProd">
-                    <i class="ph ph-plus"></i> Agregar
-                </button>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-modal p-0 overflow-hidden border-0">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" style="z-index: 10;"></button>
+                <div class="row g-0">
+                    <div class="col-md-6 bg-black d-flex justify-content-center align-items-center">
+                        <img id="prodImg" src="" class="img-fluid w-100 h-100 object-fit-contain" style="max-height: 400px;">
+                    </div>
+                    <div class="col-md-6 p-4 d-flex flex-column">
+                        <h3 class="text-white fw-bold mb-1" id="prodTitulo">Producto</h3>
+                        <h4 class="text-warning fw-bold mb-3" id="prodPrecio">0 BOB</h4>
+                        <p class="text-muted mb-4 flex-grow-1" id="prodDesc">Descripción</p>
+                        <button class="btn btn-gradient w-100 py-3 fw-bold" id="btnAgregarProd">
+                            <i class="ph ph-plus-circle"></i> Agregar a la Reserva
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

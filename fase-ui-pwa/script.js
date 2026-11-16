@@ -22,47 +22,30 @@ let carrito = [];
 let precioBaseSala = 50;
 
 $(document).ready(function() {
-    // Navegación
-    $('.nav-item').on('click', function(e) {
+    // Navegación Web y PWA
+    $('.nav-item, .nav-link-web').on('click', function(e) {
         e.preventDefault();
-        $('.nav-item').removeClass('active');
+        $('.nav-item, .nav-link-web').removeClass('active');
         $(this).addClass('active');
         $('.app-view').removeClass('active');
         $('#' + $(this).data('target')).addClass('active');
     });
 
-    // Cargar Canciones (Ruta corregida: data/canciones.json)
+    // Cargar Canciones
     fetch('data/canciones.json')
         .then(res => res.json())
         .then(data => {
             let html = '';
             data.forEach(item => {
-                // Agregamos data-genero para el filtro
                 html += `
                 <article class="tarjeta-prod pista-card" data-titulo="${item.titulo}" data-artista="${item.artista}" data-genero="${item.genero}" data-hd="${item.portada_hd}" data-letra="${item.letra}">
                     <img src="${item.portada}" loading="lazy">
-                    <div class="info-prod"><h4>${item.titulo}</h4><p>${item.artista}</p></div>
+                    <div class="info-prod"><h4>${item.titulo}</h4><p>${item.artista} • ${item.genero}</p></div>
                     <i class="ph ph-caret-right text-muted"></i>
                 </article>`;
             });
             $('#catalogoKaraoke').html(html);
         });
-
-    // Filtro por Género
-    $('#filtrosGenero .btn').on('click', function() {
-        $('#filtrosGenero .btn').removeClass('active');
-        $(this).addClass('active');
-        let genero = $(this).data('filtro');
-
-        $('.pista-card').each(function() {
-            let itemGenero = $(this).data('genero');
-            if (genero === 'todos' || itemGenero === genero) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-    });
 
     // Cargar Productos (Snacks y Bebidas)
     fetch('data/productos.json')
@@ -89,7 +72,7 @@ $(document).ready(function() {
             $('#catalogoBebidas').html(htmlB);
         });
 
-    // Abrir Modal de Pista
+    // Modal Pista
     $(document).off('click', '.pista-card').on('click', '.pista-card', function() {
         $('#pistaTitulo').text($(this).data('titulo'));
         $('#pistaArtista').text($(this).data('artista'));
@@ -104,7 +87,7 @@ $(document).ready(function() {
         new bootstrap.Modal(document.getElementById('modalPista')).show();
     });
 
-    // Abrir Modal de Producto
+    // Modal Producto
     $(document).off('click', '.prod-card').on('click', '.prod-card', function() {
         $('#prodTitulo').text($(this).data('titulo'));
         $('#prodDesc').text($(this).data('desc'));
@@ -120,12 +103,41 @@ $(document).ready(function() {
         });
         new bootstrap.Modal(document.getElementById('modalProducto')).show();
     });
+
+    // Filtro por Género Musical
+    $('#filtrosGenero .btn').on('click', function() {
+        $('#filtrosGenero .btn').removeClass('active');
+        $(this).addClass('active');
+        let genero = $(this).data('filtro');
+
+        $('.pista-card').each(function() {
+            if (genero === 'todos' || $(this).data('genero') === genero) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Buscador de Pistas
+    $('#buscadorPistas').on('keyup', function() {
+        let texto = $(this).val().toLowerCase();
+        $('.pista-card').each(function() {
+            let titulo = $(this).data('titulo').toLowerCase();
+            let artista = $(this).data('artista').toLowerCase();
+            if (titulo.includes(texto) || artista.includes(texto)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
 });
 
 function agregarAlCarrito(tipo, titulo, precio) {
     let item = carrito.find(i => i.titulo === titulo);
     if(item) { item.cantidad++; } else { carrito.push({ tipo, titulo, precio, cantidad: 1 }); }
-    mostrarToast('Agregado', titulo + ' sumado.');
+    mostrarToast('Agregado', titulo + ' sumado a la reserva.');
     renderizarResumen();
 }
 
@@ -139,6 +151,7 @@ function renderizarResumen() {
     $('#listaResumen').html(html);
 }
 
+// Confirmar Reserva
 $(document).ready(function() {
     $('#btnConfirmar').on('click', function() {
         let nombre = $('#clienteNombre').val().trim();
@@ -189,6 +202,7 @@ $(document).ready(function() {
         carrito = [];
         renderizarResumen();
         $('.nav-item[data-target="view-reserva"]').click();
+        $('.nav-link-web[data-target="view-reserva"]').click();
     });
 });
 
